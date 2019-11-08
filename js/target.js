@@ -262,28 +262,10 @@ var Target = function(webgl) {
         }*/
     };
 
-    webgl.lineWidth(3); // fvck
-
-    for(j = 0; j < 41; j++) {
-        angle = 2 * Math.PI * (j / 40);
-
-        tmp.push({
-            y: Math.cos(angle),
-            x: Math.sin(angle)
-        });
-    }
-
-    i = 0.1;
-    for(j = 0; j < 40; j++) {
-        if(j >= 15 && j < 25) {
-            continue ;
-        }
-
-    }
-    triangles.poData.push(10, tmp[25].y+5, i);
-    triangles.poData.push(12, tmp[15].y+5, i);
-    triangles.poData.push(12, tmp[15].y+2, i);
-    triangles.poData.push(10, tmp[25].y+2, i);
+    triangles.poData.push(10,5, 1);
+    triangles.poData.push(12,5, 1);
+    triangles.poData.push(12,2, 1);
+    triangles.poData.push(10,2, 1);
     triangles.coData.push(0, 0, 0);
     triangles.coData.push(0, 0, 0);
     triangles.coData.push(0, 0, 0);
