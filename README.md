@@ -6,6 +6,17 @@
 3. 以上步骤结束后根据时间，时间充裕则考虑是否增加机关／故事主线／风格装饰。无时间则按原计划
 4. 密码箱界面 打开
 
+## 细节
+1.位置移动http://www.alloyteam.com/2016/09/built-with-webgl-3d-maze-game/
+2.门 无交互 图片蒙皮(地板蒙皮)
+3.门把 target （图形设计）
+4.灯 没交互 光源变化 
+5.开关 光源控制 位置变化
+6.墙上字 开关变化直接显示
+
+Bug墙不对称
+
+
 Our project is a first-person room escape game. The player will control a person locked in a room and try to find clues and props in order to get out. 
 There are currently two puzzles in the room. Player needs to solve them in a certain order to get out of the room. When the main character turns off the light, a fluorescent password will appear. Then the character can open a safe box using the password. A pistol will appear and the character then can broke the door lock with the pistol and escape.The interactions involved in the game are: 
 The movement of the protagonist's position and the changing point of view. 
