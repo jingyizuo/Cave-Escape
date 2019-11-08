@@ -7,12 +7,12 @@
 4. 密码箱界面 打开
 
 ## 细节
-1.位置移动http://www.alloyteam.com/2016/09/built-with-webgl-3d-maze-game/
-2.门 无交互 图片蒙皮(地板蒙皮)
-3.门把 target （图形设计）
-4.灯 没交互 光源变化 
-5.开关 光源控制 位置变化
-6.墙上字 开关变化直接显示
+1. 位置移动http://www.alloyteam.com/2016/09/built-with-webgl-3d-maze-game/
+2. 门 无交互 图片蒙皮(地板蒙皮)
+3. 门把 target （图形设计）
+4. 灯 没交互 光源变化 
+5. 开关 光源控制 位置变化
+6. 墙上字 开关变化直接显示
 
 Bug墙不对称
 
