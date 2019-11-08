@@ -17,37 +17,38 @@
                 }
             });
         },
-        over: function() {
-            second.init();
-            targets.remove(obstacles[0].index);
-            targets.remove(obstacles[1].index);
-        }
+        
     };
     var level = {
         prompt: document.getElementById('prompt'),
         isStart: false,
         curr: 0,
+        flag: 0,
         levels: [first],
         start: function() {
             audio.start();
             time.start();
         },
         over: function(sign) {
+            
+            audio.end();
+            time.end();
             if(sign) {
-                console.log('游戏胜利');
-            } else {
-                console.log('游戏失败');
-            }
+                alert('跳到胜利场景');
 
-            setTimeout(function() {
+            } else {
+                alert('跳到失败场景');
+
+            }
+            /*setTimeout(function() {
                 audio.end();
                 time.end();
-            }, 1000);
+            }, 1000);*/
         },
         init: function() {
             this.levels[this.curr].init();
         },
-        next: function() {
+        /*next: function() {
             var self = this;
             this.curr++;
 
@@ -66,12 +67,19 @@
                 this.over(true);
             }
 
-        },
-        check: function() {
-            --this.levels[this.curr].total;
-            if(this.levels[this.curr].total === 0) {
-                this.next();
+        },*/
+        check: function(sign) {
+            if(sign){
+                this.over(true);
             }
+            else{
+                --this.levels[this.curr].time;
+                if(this.levels[this.curr].time === 0) {
+                    this.over(false);
+                }
+            }
+            
+
         },
         showBoard: function() {
 

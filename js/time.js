@@ -1,6 +1,6 @@
 (function() {
     var time = {
-        curr: 60,
+        curr: 10,
         timer: null,
         dom: document.getElementById('bgTime'),
         start: function() {
@@ -16,6 +16,11 @@
         end: function() {
             clearInterval(this.timer);
             this.timer = setInterval(function() {
+                this.dom.innerHTML = this.curr;
+            }.bind(this), 100);
+            //alert('跳到结束场景');
+            /*clearInterval(this.timer);
+            this.timer = setInterval(function() {
                 if(this.curr <= 0) {
                     clearInterval(this.timer);
                     alert('游戏结束，您最终得分: ' + score.total);
@@ -24,7 +29,7 @@
 
                 this.dom.innerHTML = --this.curr;
                 score.add(0.5);
-            }.bind(this), 16);
+            }.bind(this), 16);*/
         }
     };
     window.time = time; 

@@ -203,9 +203,12 @@ var Target = function(webgl) {
                     id = this.ids[i][0] + this.ids[i][1] + this.ids[i][2];
                     //this[id].leave();
                     score.add(1);
-                    //level.check();
+                    level.check(true);
                     // this.addTrace();
                     break ;
+                }
+                else{
+                    level.check(false);
                 }
             }
         }
