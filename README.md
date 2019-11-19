@@ -14,7 +14,10 @@
 5. 开关 光源控制 位置变化
 6. 墙上字 开关变化直接显示
 
-Bug墙不对称
+Bug
+墙不对称
+弹道变形
+穿墙
 
 
 Our project is a first-person room escape game. The player will control a person locked in a room and try to find clues and props in order to get out. 
