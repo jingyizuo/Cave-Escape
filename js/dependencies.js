@@ -89,38 +89,6 @@ class Windmill extends Shape                     // Windmill Shape.  As our shap
     }
 }
 
-window.Cube = window.classes.Cube =
-class Cube extends Shape    // A cube inserts six square strips into its arrays.
-{ constructor()  
-    { super( "positions", "normals", "texture_coords" );
-      for( var i = 0; i < 3; i++ )                    
-        for( var j = 0; j < 2; j++ )
-        { var square_transform = Mat4.rotation( i == 0 ? Math.PI/2 : 0, Vec.of(1, 0, 0) )
-                         .times( Mat4.rotation( Math.PI * j - ( i == 1 ? Math.PI/2 : 0 ), Vec.of( 0, 1, 0 ) ) )
-                         .times( Mat4.translation([ 0, 0, 1 ]) );
-          Square.insert_transformed_copy_into( this, [], square_transform );
-        }
-    }
-}
-
-window.Line_Segment_Array = window.classes.Line_Segment_Array =
-class Line_Segment_Array extends Shape    // Plot 2D points.
-{ constructor()
-  { super( "positions", "colors" );
-    this.indexed = false;
-  }
-  set_data( origins, destinations, colors, gl = this.gl )      // Provide two lists of points (each pair will be connected into a segment),
-    { this.positions = [];                                     // plus a list of enough colors for each of those two points per segment.
-      for( let [i] of origins.entries() )
-      { this.positions[ 2*i     ] = origins[i];  
-        this.positions[ 2*i + 1 ] = destinations[i];
-      }
-      this.colors = colors;
-      this.copy_onto_graphics_card( gl, [ "positions", "colors" ], false );
-    }
-  execute_shaders( gl ) { gl.drawArrays( gl.LINES, 0, this.positions.length ) }   // Same as normal draw, but with gl.LINES.
-}
-
 
 window.Subdivision_Sphere = window.classes.Subdivision_Sphere =
 class Subdivision_Sphere extends Shape  // This Shape defines a Sphere surface, with nice uniform triangles.  A subdivision surface (see
@@ -163,150 +131,6 @@ class Subdivision_Sphere extends Shape  // This Shape defines a Sphere surface, 
       this.subdivideTriangle( ab, b, bc,  count - 1 );          // fourth vertex index in our list takes you down one level of detail,
       this.subdivideTriangle( ac, bc, c,  count - 1 );          // and so on, due to the way we're building it.
       this.subdivideTriangle( ab, bc, ac, count - 1 );
-    }
-}
-
-
-window.Grid_Patch = window.classes.Grid_Patch =
-class Grid_Patch extends Shape              // A grid of rows and columns you can distort. A tesselation of triangles connects the
-{                                           // points, generated with a certain predictable pattern of indices.  Two callbacks
-                                            // allow you to dynamically define how to reach the next row or column.
-  constructor( rows, columns, next_row_function, next_column_function, texture_coord_range = [ [ 0, rows ], [ 0, columns ] ]  )
-    { super( "positions", "normals", "texture_coords" );
-      let points = [];
-      for( let r = 0; r <= rows; r++ ) 
-      { points.push( new Array( columns+1 ) );                                                    // Allocate a 2D array.
-                                             // Use next_row_function to generate the start point of each row. Pass in the progress ratio,
-        points[ r ][ 0 ] = next_row_function( r/rows, points[ r-1 ] && points[ r-1 ][ 0 ] );      // and the previous point if it existed.                                                                                                  
-      }
-      for(   let r = 0; r <= rows;    r++ )               // From those, use next_column function to generate the remaining points:
-        for( let c = 0; c <= columns; c++ )
-        { if( c > 0 ) points[r][ c ] = next_column_function( c/columns, points[r][ c-1 ], r/rows );
-      
-          this.positions.push( points[r][ c ] );        
-                                                                                      // Interpolate texture coords from a provided range.
-          const a1 = c/columns, a2 = r/rows, x_range = texture_coord_range[0], y_range = texture_coord_range[1];
-          this.texture_coords.push( Vec.of( ( a1 )*x_range[1] + ( 1-a1 )*x_range[0], ( a2 )*y_range[1] + ( 1-a2 )*y_range[0] ) );
-        }
-      for(   let r = 0; r <= rows;    r++ )            // Generate normals by averaging the cross products of all defined neighbor pairs.
-        for( let c = 0; c <= columns; c++ )
-        { let curr = points[r][c], neighbors = new Array(4), normal = Vec.of( 0,0,0 );          
-          for( let [ i, dir ] of [ [ -1,0 ], [ 0,1 ], [ 1,0 ], [ 0,-1 ] ].entries() )         // Store each neighbor by rotational order.
-            neighbors[i] = points[ r + dir[1] ] && points[ r + dir[1] ][ c + dir[0] ];        // Leave "undefined" in the array wherever
-                                                                                              // we hit a boundary.
-          for( let i = 0; i < 4; i++ )                                          // Take cross-products of pairs of neighbors, proceeding
-            if( neighbors[i] && neighbors[ (i+1)%4 ] )                          // a consistent rotational direction through the pairs:
-              normal = normal.plus( neighbors[i].minus( curr ).cross( neighbors[ (i+1)%4 ].minus( curr ) ) );          
-          normal.normalize();                                                              // Normalize the sum to get the average vector.
-                                                     // Store the normal if it's valid (not NaN or zero length), otherwise use a default:
-          if( normal.every( x => x == x ) && normal.norm() > .01 )  this.normals.push( Vec.from( normal ) );    
-          else                                                      this.normals.push( Vec.of( 0,0,1 )    );
-        }   
-        
-      for( var h = 0; h < rows; h++ )             // Generate a sequence like this (if #columns is 10):  
-        for( var i = 0; i < 2 * columns; i++ )    // "1 11 0  11 1 12  2 12 1  12 2 13  3 13 2  13 3 14  4 14 3..." 
-          for( var j = 0; j < 3; j++ )
-            this.indices.push( h * ( columns + 1 ) + columns * ( ( i + ( j % 2 ) ) % 2 ) + ( ~~( ( j % 3 ) / 2 ) ? 
-                                   ( ~~( i / 2 ) + 2 * ( i % 2 ) )  :  ( ~~( i / 2 ) + 1 ) ) );
-    }
-  static sample_array( array, ratio )                 // Optional but sometimes useful as a next row or column operation. In a given array
-    {                                                 // of points, intepolate the pair of points that our progress ratio falls between.  
-      const frac = ratio * ( array.length - 1 ), alpha = frac - Math.floor( frac );
-      return array[ Math.floor( frac ) ].mix( array[ Math.ceil( frac ) ], alpha );
-    }
-}
-
-window.Surface_Of_Revolution = window.classes.Surface_Of_Revolution =
-class Surface_Of_Revolution extends Grid_Patch      // SURFACE OF REVOLUTION: Produce a curved "sheet" of triangles with rows and columns.
-                                                    // Begin with an input array of points, defining a 1D path curving through 3D space -- 
-                                                    // now let each such point be a row.  Sweep that whole curve around the Z axis in equal 
-                                                    // steps, stopping and storing new points along the way; let each step be a column. Now
-                                                    // we have a flexible "generalized cylinder" spanning an area until total_curvature_angle.
-{ constructor( rows, columns, points, texture_coord_range, total_curvature_angle = 2*Math.PI )
-    { const row_operation =     i => Grid_Patch.sample_array( points, i ),
-         column_operation = (j,p) => Mat4.rotation( total_curvature_angle/columns, Vec.of( 0,0,1 ) ).times(p.to4(1)).to3();
-         
-       super( rows, columns, row_operation, column_operation, texture_coord_range );
-    }
-}
-
-window.Regular_2D_Polygon = window.classes.Regular_2D_Polygon =
-class Regular_2D_Polygon extends Surface_Of_Revolution  // Approximates a flat disk / circle
-  { constructor( rows, columns ) { super( rows, columns, Vec.cast( [0, 0, 0], [1, 0, 0] ) ); 
-                                   this.normals = this.normals.map( x => Vec.of( 0,0,1 ) );
-                                   this.texture_coords.forEach( (x, i, a) => a[i] = this.positions[i].map( x => x/2 + .5 ).slice(0,2) ); } }
-
-window.Cylindrical_Tube = window.classes.Cylindrical_Tube =
-class Cylindrical_Tube extends Surface_Of_Revolution    // An open tube shape with equally sized sections, pointing down Z locally.    
-  { constructor( rows, columns, texture_range ) { super( rows, columns, Vec.cast( [1, 0, .5], [1, 0, -.5] ), texture_range ); } }
-
-window.Cone_Tip = window.classes.Cone_Tip =
-class Cone_Tip extends Surface_Of_Revolution        // Note:  Touches the Z axis; squares degenerate into triangles as they sweep around.
-  { constructor( rows, columns, texture_range ) { super( rows, columns, Vec.cast( [0, 0, 1],  [1, 0, -1]  ), texture_range ); } }
-
-window.Torus = window.classes.Torus =
-class Torus extends Shape                                         // Build a donut shape.  An example of a surface of revolution.
-  { constructor( rows, columns )  
-      { super( "positions", "normals", "texture_coords" );
-        const circle_points = Array( rows ).fill( Vec.of( .75,0,0 ) )
-                                           .map( (p,i,a) => Mat4.translation([ -2,0,0 ])
-                                                    .times( Mat4.rotation( i/(a.length-1) * 2*Math.PI, Vec.of( 0,-1,0 ) ) )
-                                                    .times( p.to4(1) ).to3() );
-
-        Surface_Of_Revolution.insert_transformed_copy_into( this, [ rows, columns, circle_points ] );         
-      } }
-
-window.Grid_Sphere = window.classes.Grid_Sphere =
-class Grid_Sphere extends Shape                         // With lattitude / longitude divisions; this means singularities are at 
-  { constructor( rows, columns, texture_range )         // the mesh's top and bottom.  Subdivision_Sphere is a better alternative.
-      { super( "positions", "normals", "texture_coords" );
-        const semi_circle_points = Array( rows ).fill( Vec.of( 0,0,1 ) ).map( (x,i,a) =>
-                                    Mat4.rotation( i/(a.length-1) * Math.PI, Vec.of( 0,1,0 ) ).times( x.to4(1) ).to3() );
-        
-        Surface_Of_Revolution.insert_transformed_copy_into( this, [ rows, columns, semi_circle_points, texture_range ] );
-      } }
-
-window.Closed_Cone = window.classes.Closed_Cone =
-class Closed_Cone extends Shape     // Combine a cone tip and a regular polygon to make a closed cone.
-  { constructor( rows, columns, texture_range )
-      { super( "positions", "normals", "texture_coords" );
-        Cone_Tip          .insert_transformed_copy_into( this, [ rows, columns, texture_range ]);    
-        Regular_2D_Polygon.insert_transformed_copy_into( this, [ 1, columns ], Mat4.rotation( Math.PI, Vec.of(0, 1, 0) )
-                                                                       .times( Mat4.translation([ 0, 0, 1 ]) ) ); } }
-
-window.Rounded_Closed_Cone = window.classes.Rounded_Closed_Cone =
-class Rounded_Closed_Cone extends Surface_Of_Revolution   // An alternative without two separate sections
-  { constructor( rows, columns, texture_range ) { super( rows, columns, Vec.cast( [0, 0, 1], [1, 0, -1], [0, 0, -1] ), texture_range ) ; } }
-
-window.Capped_Cylinder = window.classes.Capped_Cylinder =
-class Capped_Cylinder extends Shape                       // Combine a tube and two regular polygons to make a closed cylinder.
-  { constructor( rows, columns, texture_range )           // Flat shade this to make a prism, where #columns = #sides.
-      { super( "positions", "normals", "texture_coords" );
-        Cylindrical_Tube  .insert_transformed_copy_into( this, [ rows, columns, texture_range ] );
-        Regular_2D_Polygon.insert_transformed_copy_into( this, [ 1, columns ],                                                  Mat4.translation([ 0, 0, .5 ]) );
-        Regular_2D_Polygon.insert_transformed_copy_into( this, [ 1, columns ], Mat4.rotation( Math.PI, Vec.of(0, 1, 0) ).times( Mat4.translation([ 0, 0, .5 ]) ) ); } }
-
-window.Rounded_Capped_Cylinder = window.classes.Rounded_Capped_Cylinder =
-class Rounded_Capped_Cylinder extends Surface_Of_Revolution   // An alternative without three separate sections
-  { constructor ( rows, columns, texture_range ) { super( rows, columns, Vec.cast( [0, 0, .5], [1, 0, .5], [1, 0, -.5], [0, 0, -.5] ), texture_range ); } }
-  
-  
-window.Axis_Arrows = window.classes.Axis_Arrows =
-class Axis_Arrows extends Shape                                   // An axis set with arrows, made out of a lot of various primitives.
-{ constructor()
-    { super( "positions", "normals", "texture_coords" );
-      var stack = [];       
-      Subdivision_Sphere.insert_transformed_copy_into( this, [ 3 ], Mat4.rotation( Math.PI/2, Vec.of( 0,1,0 ) ).times( Mat4.scale([ .25, .25, .25 ]) ) );
-      this.drawOneAxis( Mat4.identity(),                                                            [[ .67, 1  ], [ 0,1 ]] );
-      this.drawOneAxis( Mat4.rotation(-Math.PI/2, Vec.of(1,0,0)).times( Mat4.scale([  1, -1, 1 ])), [[ .34,.66 ], [ 0,1 ]] );
-      this.drawOneAxis( Mat4.rotation( Math.PI/2, Vec.of(0,1,0)).times( Mat4.scale([ -1,  1, 1 ])), [[  0 ,.33 ], [ 0,1 ]] ); 
-    }
-  drawOneAxis( transform, tex )    // Use a different texture coordinate range for each of the three axes, so they show up differently.
-    { Closed_Cone     .insert_transformed_copy_into( this, [ 4, 10, tex ], transform.times( Mat4.translation([   0,   0,  2 ]) ).times( Mat4.scale([ .25, .25, .25 ]) ) );
-      Cube            .insert_transformed_copy_into( this, [ ],            transform.times( Mat4.translation([ .95, .95, .45]) ).times( Mat4.scale([ .05, .05, .45 ]) ) );
-      Cube            .insert_transformed_copy_into( this, [ ],            transform.times( Mat4.translation([ .95,   0, .5 ]) ).times( Mat4.scale([ .05, .05, .4  ]) ) );
-      Cube            .insert_transformed_copy_into( this, [ ],            transform.times( Mat4.translation([   0, .95, .5 ]) ).times( Mat4.scale([ .05, .05, .4  ]) ) );
-      Cylindrical_Tube.insert_transformed_copy_into( this, [ 7, 7,  tex ], transform.times( Mat4.translation([   0,   0,  1 ]) ).times( Mat4.scale([  .1,  .1,  2  ]) ) );
     }
 }
 
@@ -426,7 +250,7 @@ class Phong_Shader extends Shader          // THE DEFAULT SHADER: This uses the 
                                            // new triangle is closer to the camera, and even if so, blending settings may interpolate some 
                                            // of the old color into the result.  Finally, an image is displayed onscreen.
 { material( color, properties )     // Define an internal class "Material" that stores the standard settings found in Phong lighting.
-  { return new class Material       // Possible properties: ambient, diffusivity, specularity, smoothness, gouraud, texture.
+  { return new class Material       // Possible properties: ambient, diffusivity, specularity, smoothness, texture.
       { constructor( shader, color = Color.of( 0,0,0,1 ), ambient = 0, diffusivity = 1, specularity = 1, smoothness = 40 )
           { Object.assign( this, { shader, color, ambient, diffusivity, specularity, smoothness } );  // Assign defaults.
             Object.assign( this, properties );                                                        // Optionally override defaults.
@@ -536,7 +360,7 @@ class Phong_Shader extends Shader          // THE DEFAULT SHADER: This uses the 
       gl.uniform1f ( gpu.animation_time_loc, g_state.animation_time / 1000 );
 
       if( g_state.gouraud === undefined ) { g_state.gouraud = g_state.color_normals = false; }    // Keep the flags seen by the shader 
-      gl.uniform1i( gpu.GOURAUD_loc,        g_state.gouraud || material.gouraud );                // program up-to-date and make sure 
+      gl.uniform1i( gpu.GOURAUD_loc,        g_state.gouraud       );                              // program up-to-date and make sure 
       gl.uniform1i( gpu.COLOR_NORMALS_loc,  g_state.color_normals );                              // they are declared.
 
       gl.uniform4fv( gpu.shapeColor_loc,     material.color       );    // Send the desired shape-wide material qualities 
@@ -611,7 +435,11 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
                                         // Set up mouse response.  The last one stops us from reacting if the mouse leaves the canvas.
       document.addEventListener( "mouseup",   e => { this.mouse.anchor = undefined; } );
       canvas  .addEventListener( "mousedown", e => { e.preventDefault(); this.mouse.anchor      = mouse_position(e); } );
-      canvas  .addEventListener( "mousemove", e => { e.preventDefault(); this.mouse.from_center = mouse_position(e); } );
+      canvas  .addEventListener( "mousemove", e => { 
+        //e.preventDefault(); this.mouse.from_center = mouse_position(e); 
+        this.mouse.from_center = Vec.of(e.movementX,e.movementY); 
+        this.roll=this.mouse.from_center[0];
+      } );
       canvas  .addEventListener( "mouseout",  e => { if( !this.mouse.anchor ) this.mouse.from_center.scale(0) } );  
     }
   show_explanation( document_element ) { }
@@ -631,8 +459,8 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       this.live_string( box => { box.textContent = "Speed: " + this.speed_multiplier.toFixed(2) }, speed_controls );
       this.key_triggered_button( "+",  [ "p" ], () => this.speed_multiplier  *=  1.2, "green", undefined, undefined, speed_controls );
       this.new_line();
-      this.key_triggered_button( "Roll left",  [ "," ], () => this.roll =  1, undefined, () => this.roll = 0 );
-      this.key_triggered_button( "Roll right", [ "." ], () => this.roll = -1, undefined, () => this.roll = 0 );  this.new_line();
+      this.key_triggered_button( "Roll left",  [ "," ], () => this.roll = -1, undefined, () => this.roll = 0 );
+      this.key_triggered_button( "Roll right", [ "." ], () => this.roll =  1, undefined, () => this.roll = 0 );  this.new_line();
       this.key_triggered_button( "(Un)freeze mouse look around", [ "f" ], () => this.look_around_locked ^=  1, "green" );
       this.new_line();
       this.live_string( box => box.textContent = "Position: " + this.pos[0].toFixed(2) + ", " + this.pos[1].toFixed(2) 
@@ -660,7 +488,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
             velocity = ( ( o.minus[i] > 0 && o.minus[i] ) || ( o.plus[i] < 0 && o.plus[i] ) ) * radians_per_frame;
           do_operation( Mat4.rotation( sign * velocity, Vec.of( i, 1-i, 0 ) ) );   // On X step, rotate around Y axis, and vice versa.
         }
-      if( this.roll != 0 ) do_operation( Mat4.rotation( sign * .1, Vec.of(0, 0, this.roll ) ) );
+      if( this.roll != 0 ) do_operation( Mat4.rotation( sign * .1, Vec.of(0, this.roll,0 ) ) );
                                                   // Now apply translation movement of the camera, in the newest local coordinate frame.
       do_operation( Mat4.translation( this.thrust.times( sign * meters_per_frame ) ) );
     }
@@ -676,7 +504,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
   display( graphics_state, dt = graphics_state.animation_delta_time / 1000 )    // Camera code starts here.
     { const m = this.speed_multiplier * this. meters_per_frame,
             r = this.speed_multiplier * this.radians_per_frame;
-      this.first_person_flyaround( dt * r, dt * m );     // Do first-person.  Scale the normal camera aiming speed by dt for smoothness.
+      this.first_person_flyaround( dt * r/10, dt * m/10 );     // Do first-person.  Scale the normal camera aiming speed by dt for smoothness.
       if( this.mouse.anchor )                            // Also apply third-person "arcball" camera mode if a mouse drag is occurring.  
         this.third_person_arcball( dt * r);           
       
@@ -685,39 +513,127 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
     }
 }
 
-window.Global_Info_Table = window.classes.Global_Info_Table =
-class Global_Info_Table extends Scene_Component                 // A class that just toggles, monitors, and reports some 
-{ make_control_panel()                                          // global values via its control panel.
-    { const globals = this.globals;
-      globals.has_info_table = true;
-      this.key_triggered_button( "(Un)pause animation", ["Alt", "a"], function() { globals.animate ^= 1; } ); this.new_line();
-      this.live_string( box => { box.textContent = "Animation Time: " + ( globals.graphics_state.animation_time/1000 ).toFixed(3) + "s" } );
-      this.live_string( box => { box.textContent = globals.animate ? " " : " (paused)" } );  this.new_line();
-      this.key_triggered_button( "Gouraud shading",     ["Alt", "g"], function() { globals.graphics_state.gouraud       ^= 1;         } ); 
-      this.new_line();
-      this.key_triggered_button( "Normals shading",     ["Alt", "n"], function() { globals.graphics_state.color_normals ^= 1;         } ); 
-      this.new_line();
-      
-      const label = this.control_panel.appendChild( document.createElement( "p" ) );
-      label.style = "align:center";
-      label.innerHTML = "A shared scratchpad is <br> accessible to all Scene_Components. <br> Navigate its values here:";
 
-      const show_object = ( element, obj = globals ) => 
-      { if( this.box ) this.box.innerHTML = "";
-        else this.box = element.appendChild( Object.assign( document.createElement( "div" ), { style: "overflow:auto; width: 200px" } ) );
-        if( obj !== globals )
-          this.box.appendChild( Object.assign( document.createElement( "div" ), { className:"link", innerText: "(back to globals)", 
-                                               onmousedown: () => this.current_object = globals } ) )
-        if( obj.to_string ) return this.box.appendChild( Object.assign( document.createElement( "div" ), { innerText: obj.to_string() } ) );
-        for( let [key,val] of Object.entries( obj ) )
-        { if( typeof( val ) == "object" ) 
-            this.box.appendChild( Object.assign( document.createElement( "a" ), { className:"link", innerText: key, 
-                                                 onmousedown: () => this.current_object = val } ) )
-          else
-            this.box.appendChild( Object.assign( document.createElement( "span" ), { innerText: key + ": " + val.toString() } ) );
-          this.box.appendChild( document.createElement( "br" ) );
-        }
-      }
-      this.live_string( box => show_object( box, this.current_object ) );      
+window.Tutorial_Animation = window.classes.Tutorial_Animation =
+class Tutorial_Animation extends Scene_Component  // This Scene_Component can be added to a display canvas.  This particular one
+{                                                 // sets up the machinery to draw a simple scene demonstrating a few concepts.
+                                                  // Scroll down to the display() method at the bottom to see where the shapes are drawn.
+  constructor( context, control_box )             // The scene begins by requesting the camera, shapes, and materials it will need.
+    { super( context, control_box );              // First, include a couple other helpful components, including one that moves you around:
+      if( !context.globals.has_controls   ) 
+        context.register_scene_component( new Movement_Controls( context, control_box.parentElement.insertCell() ) ); 
+
+              // Define the global camera and projection matrices, which are stored in a scratchpad for globals.  The projection is special 
+              // because it determines how depth is treated when projecting 3D points onto a plane.  The function perspective() makes one.
+              // Its input arguments are field of view, aspect ratio, and distances to the near plane and far plane.
+      context.globals.graphics_state.    camera_transform = Mat4.translation([ 0,0,-30 ]);    // Locate the camera here (inverted matrix).
+      context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, context.width/context.height, .1, 1000 );
+            
+      const shapes = { 'triangle'        : new Triangle(),                // At the beginning of our program, load one of each of these shape 
+                       'strip'           : new Square(),                  // definitions onto the GPU.  NOTE:  Only do this ONCE per shape
+                       'bad_tetrahedron' : new Tetrahedron( false ),      // design.  Once you've told the GPU what the design of a cube is,
+                       'tetrahedron'     : new Tetrahedron( true ),       // it would be redundant to tell it again.  You should just re-use
+                       'windmill'        : new Windmill( 10 ),            // the one called "box" more than once in display() to draw
+                       'box'             : new Cube(),                    // multiple cubes.  Don't define more than one blueprint for the
+                       'ball'            : new Subdivision_Sphere( 4 ) }; // same thing here.
+      this.submit_shapes( context, shapes );
+      
+      [ this.hover, this.t ] = [ false, 0 ];    // Define a couple of data members called "hover" and "t".
+      
+      // *** Materials: *** Define more data members here, returned from the material() function of our shader.  Material objects contain
+      //                    shader configurations.  They are used to light and color each shape.  Declare new materials as temps when
+      //                    needed; they're just cheap wrappers for some numbers.  1st parameter:  Color (4 floats in RGBA format).
+      this.clay    = context.get_instance( Phong_Shader ).material( Color.of( .9,.5,.9, 1 ), { ambient: .4, diffusivity: .4 } );
+      this.plastic = this.clay.override({ specularity: .6 });
+      this.glass   = context.get_instance( Phong_Shader ).material( Color.of( .5,.5, 1,.2 ), { ambient: .4, specularity: .4 } );
+      this.fire    = context.get_instance( Funny_Shader ).material();
+      this.stars   = this.plastic.override({ texture: context.get_instance( "assets/stars.png" ) });
+
+      // *** Lights: *** Values of vector or point lights.  They'll be consulted by the shader when coloring shapes.  Two different lights 
+      //                 *per shape* are supported by in the example shader; more requires changing a number in it or other tricks.
+      //                 Arguments to construct a Light(): Light source position or vector (homogeneous coordinates), color, and intensity.
+      this.lights = [ new Light( Vec.of(  30,  30,  34, 1 ), Color.of( 0, .4, 0, 1 ), 100000 ),
+                      new Light( Vec.of( -10, -20, -14, 0 ), Color.of( 1, 1, .3, 1 ), 100    ) ];
+    }
+  make_control_panel()               // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
+    { this.control_panel.innerHTML += "Creature rotation angle: <br>";    // This line adds stationary text.  The next line adds live text.
+      this.live_string( box => { box.textContent = ( this.hover ? 0 : ( this.t % (2*Math.PI)).toFixed(2) ) + " radians" } ); this.new_line();
+      this.key_triggered_button( "Hover in place", [ "h" ], function() { this.hover ^= 1; } );    // Add a button for controlling the scene.
+    }
+  show_explanation( document_element )          // Write the demo's description (a big long string) onto the web document.
+    { document_element.innerHTML += `<p>If you've written a computer program before but not in JavaScript, rest assured that it is mostly the same as other languages.  <a href=https://piazza.com/class_profile/get_resource/j855t03rsfv1cn/j9k7wljazkdsb target='_blank'>This .pdf document</a> lists down the similarities and differences between C++ and JavaScript that you might encounter here.  Google "es6" instead of "JavaScript" when learning to avoid missing newer capabilities.  Generally, you'll want to get comfortable with imperative, object oriented, and functional programming styles to use this library.   
+    </p><p>This first article is meant to show how best to organize a 3D graphics program in JavaScript using WebGL -- a \"hello world\" example, or more accurately, \"hello triangle\". A lot of \"boilerplate\" code is required just to get a single 3D triangle to draw on a web canvas, and it's not at all obvious how to organize that code so that you can be flexible later, when you'll probably want to dynamically switch out pieces of your program whenever you want - whether they be other shader programs, vertex arrays (shapes), textures (images), or entire scenes. You might even want those things to happen whenever the user of your program presses a button.    
+    </p><p>This \"hello triangle\" example is organized to do all that while keeping its source code tiny. A ~500 line library file called tiny-graphics.js sets up all the flexibility mentioned above, and it's shared by all pages on this encyclopedia.  That file can always be accessed <a href=/tiny-graphics.js>here</a>.  A file called dependencies.js contains all the code required by the particular article you're viewing on the encyclopedia of code. Every article you navigate to on the encyclopedia will provide you with a minimal copy of dependencies.js, containing only the code that your current article needs.    
+    </p><p>If you have never written a graphics program before, you'll need to know what a transformation matrix is in 3D graphics. Check out <a href=https://piazza.com/class_profile/get_resource/j855t03rsfv1cn/j9k7wl8ijmks0 target='_blank'>this other .pdf document</a> explaining those, including the three special matrices (rotation, translation, and scale) that you'll see over and over in graphics programs like this one. Finally, scroll down to the source code at the bottom to see how these functions are used to generate special matrices that draw the shapes in the right places in the 3D world.    
+    </p><p>The scene shown here demonstrates a lot of concepts at once using very little code.  These include drawing your first triangle, storing trivial shapes, storing lights and materials and shader programs, flat vs. smooth shading, and matrix transformations.   You can see all the parts of the scene being drawn by the code written in the "display" function; these parts are all independent from one another, so feel free delete whichever sections you want from there and the other shapes will remain.  Save your changes to produce your own page.  For pretty demonstrations of more advanced topics, such as <a href=/Surfaces_Demo>Surface Patch shapes</a>, <a href=/Inertia_Demo>Inertia</a>, <a href=/Collision_Demo>Collision Detection</a>, and <a href=/Ray_Tracer>Ray Tracing</a>, use the blue bar at the top of this page to visit the next articles.  To see how a minimal but functional game works, check out <a href=/Billiards>Billiards</a>.  To train yourself to get matrix order right when placing shapes, play the <a href=/Bases_Game>Bases Game</a>.</p>
+   `}
+  draw_arm( graphics_state, model_transform )                   // An example of how to break up the work of drawing into other functions.
+    { const arm = model_transform.times( Mat4.translation([ 0,0,3+1 ]) );
+      this.shapes.ball.draw( graphics_state, arm, this.plastic.override({ color: Color.of( 0,0,1,.7 ) }) );
+    }
+  display( graphics_state )
+    { let model_transform = Mat4.identity();      // This will be a temporary matrix that helps us draw most shapes.
+                                                  // It starts over as the identity every single frame - coordinate axes at the origin.
+      graphics_state.lights = this.lights;        // Override graphics_state with the default lights of this class. 
+      
+      const yellow = Color.of( 1,1,0,1 ), gray = Color.of( .5,.5,.5,1 ), green = Color.of( 0,.5,0,1 );  
+     /**********************************
+      Start coding down here!!!!
+      **********************************/         // From here on down it's just some example shapes drawn for you -- freely replace them 
+                                                  // with your own!  Notice the usage of the functions translation(), scale(), and rotation()
+                                                  // to generate matrices, and the functions times(), which generates products of matrices.
+      
+      model_transform = model_transform.times( Mat4.translation([ 0, 5, 0 ]) );
+      this.shapes.triangle.draw( graphics_state, model_transform, this.stars );   // Draw the top triangle.
+      
+      model_transform = model_transform.times( Mat4.translation([ 0, -2, 0 ]) );  // Tweak our coordinate system downward for the next shape.
+      this.shapes.strip.draw( graphics_state, model_transform, this.plastic.override({ color: gray })  );      // Draw the square.
+                                                              // Find how much time has passed in seconds. Use that as input to build
+      const t = this.t = graphics_state.animation_time/1000;  // and store a couple rotation matrices that vary over time.
+      const tilt_spin   = Mat4.rotation( 12*t, Vec.of(          .1,          .8,             .1 ) ),
+            funny_orbit = Mat4.rotation(  2*t, Vec.of( Math.cos(t), Math.sin(t), .7*Math.cos(t) ) );
+
+              // All the shapes in a scene can share influence of the same pair of lights.  Alternatively, here's what happens when you
+              // use different lights on part of a scene.  All the shapes below this line of code will use these moving lights instead.
+      graphics_state.lights = [ new Light( tilt_spin.times( Vec.of(  30,  30,  34, 1 ) ), Color.of( 0, .4, 0, 1 ), 100000               ),
+                                new Light( tilt_spin.times( Vec.of( -10, -20, -14, 0 ) ), Color.of( 1, 1, .3, 1 ), 100*Math.cos( t/10 ) ) ];
+                            
+                        // The post_multiply() function is like times(), but be careful with it; it modifies the originally stored matrix in
+                        // place rather than generating a new matrix, which could throw off your attempts to maintain a history of matrices. 
+      model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );
+                                      // In the constructor, we requested two tetrahedron shapes, one with flat shading and one with smooth.
+      this.shapes.tetrahedron.draw( graphics_state, model_transform.times( funny_orbit ), this.plastic );      // Show the flat tetrahedron.
+      
+      model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );
+      this.shapes.bad_tetrahedron.draw( graphics_state, model_transform.times( funny_orbit ),   // Show the smooth tetrahedron.  It's worse.
+                                        this.plastic.override( { color: Color.of( .5,.5,.5, 1 ) } )   );
+      
+                  // Draw three of the "windmill" shape.  The first one spins over time.  The second demonstrates a custom shader, because
+                  // the material "fire" above was built from a different shader class than the others.  The third shows off transparency.
+      model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );
+      this.shapes.windmill       .draw( graphics_state, model_transform.times( tilt_spin ), this.plastic );
+      model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );
+      this.shapes.windmill       .draw( graphics_state, model_transform,                    this.fire    );
+      model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );
+      this.shapes.windmill       .draw( graphics_state, model_transform,                    this.glass   );
+      
+                                 // Now to demonstrate some more useful (but harder to build) shapes:  A Cube and a Subdivision_Sphere.
+                                 // If you look in those two classes they're a bit less trivial than the previous shapes.
+      model_transform.post_multiply( Mat4.translation([ 0, -2, 0 ]) );                                         // Draw the ground plane:
+      this.shapes.box.draw( graphics_state, model_transform.times( Mat4.scale([ 15,.1,15 ]) ), this.plastic.override({ color: green }) );
+            
+      model_transform = model_transform.times( Mat4.translation( Vec.of( 10,10,0 ) ) );                        // Move up off the ground.
+                                                                   // Spin the coordinate system if the hover button hasn't been pressed:
+      if( !this.hover ) model_transform = model_transform.times( Mat4.rotation( -this.t, Vec.of( 0,1,0 ) ) );
+                                                                                            // Begin drawing a "creature" with two arms.   
+      this.shapes.ball.draw( graphics_state, model_transform, this.plastic.override({ color: Color.of( .8,.8,.8,1 ) }) );
+                                      // Placing shapes that barely touch each other requires knowing and adding half the length of each.
+      model_transform = model_transform.times( Mat4.translation( Vec.of( 0,-( 1 + .2 ),0 ) ) );   
+      this.shapes.box.draw( graphics_state, model_transform.times( Mat4.scale([ 3,.2,3 ]) ), this.plastic.override({ color: yellow }) );
+                      // Each loop iteration, the following will draw the same thing on a different side due to a reflection:
+      for( let side of [-1,1] )                                                     // For each of the two values -1 and 1, reflect the
+      { let flipped = model_transform.times( Mat4.scale([ 1,1,side ]) );            // coordinate system (or not) depending on the value.
+        this.draw_arm( graphics_state, flipped );                                   // Example of how to call your own function, passing
+      }                                                                             // in your matrix.
     }
 }
