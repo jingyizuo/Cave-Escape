@@ -425,7 +425,8 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       context.globals.movement_controls_target = function(t) { return context.globals.graphics_state.camera_transform };
       context.globals.movement_controls_invert = this.will_invert = () => true;
       context.globals.has_controls = true;
-
+      this.up_down=0;
+      this.total_updown=0;
       [ this.radians_per_frame, this.meters_per_frame, this.speed_multiplier ] = [ 1/200, 20, 1 ];
       
       // *** Mouse controls: ***
@@ -433,14 +434,22 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       const mouse_position = ( e, rect = canvas.getBoundingClientRect() ) => 
                                    Vec.of( e.clientX - (rect.left + rect.right)/2, e.clientY - (rect.bottom + rect.top)/2 );
                                         // Set up mouse response.  The last one stops us from reacting if the mouse leaves the canvas.
-      document.addEventListener( "mouseup",   e => { this.mouse.anchor = undefined; } );
-      canvas  .addEventListener( "mousedown", e => { e.preventDefault(); this.mouse.anchor      = mouse_position(e); } );
+      document.addEventListener( "mouseup",   e => { 
+        this.mouse.anchor = undefined;
+      } );
+      canvas  .addEventListener( "mousedown", e => { 
+        e.preventDefault(); //this.mouse.anchor      = mouse_position(e); 
+      } );
       canvas  .addEventListener( "mousemove", e => { 
         //e.preventDefault(); this.mouse.from_center = mouse_position(e); 
         this.mouse.from_center = Vec.of(e.movementX,e.movementY); 
         this.roll=this.mouse.from_center[0];
+        this.up_down=this.mouse.from_center[1];
       } );
-      canvas  .addEventListener( "mouseout",  e => { if( !this.mouse.anchor ) this.mouse.from_center.scale(0) } );  
+      canvas  .addEventListener( "mouseout",  e => { 
+        if( !this.mouse.anchor ) 
+          this.mouse.from_center.scale(0);
+      } );  
     }
   show_explanation( document_element ) { }
   make_control_panel()                                                        // This function of a scene sets up its keyboard shortcuts.
@@ -488,7 +497,13 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
             velocity = ( ( o.minus[i] > 0 && o.minus[i] ) || ( o.plus[i] < 0 && o.plus[i] ) ) * radians_per_frame;
           do_operation( Mat4.rotation( sign * velocity, Vec.of( i, 1-i, 0 ) ) );   // On X step, rotate around Y axis, and vice versa.
         }
-      if( this.roll != 0 ) do_operation( Mat4.rotation( sign * .1, Vec.of(0, this.roll,0 ) ) );
+      
+      if( this.roll != 0 ){
+        //do_operation( Mat4.rotation( -this.total_updown, Vec.of(this.up_down, 0,0 ) ) );
+        do_operation( Mat4.rotation( sign * .02, Vec.of(0, this.roll,0 ) ) );
+        //do_operation( Mat4.rotation( this.total_updown, Vec.of(this.up_down, 0,0 ) ) );
+      } 
+      
                                                   // Now apply translation movement of the camera, in the newest local coordinate frame.
       do_operation( Mat4.translation( this.thrust.times( sign * meters_per_frame ) ) );
     }

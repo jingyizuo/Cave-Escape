@@ -94,7 +94,7 @@ class Assignment_One_Scene extends Scene_Component
           context.register_scene_component( new Movement_Controls( context, control_box.parentElement.insertCell() ) );
 
         const r = context.width/context.height;
-        context.globals.graphics_state.    camera_transform = Mat4.translation([ 0,-10,-50 ]);  // Locate the camera here (inverted matrix).
+        context.globals.graphics_state.    camera_transform = Mat4.translation([ 0,5,0 ]);  // Locate the camera here (inverted matrix).
         context.globals.graphics_state.projection_transform = Mat4.perspective( Math.PI/4, r, .1, 1000 );
 
         const shapes = { 'box': new Cube(),               // At the beginning of our program, load one of each of these shape
@@ -192,6 +192,11 @@ class Assignment_One_Scene extends Scene_Component
         model_transform = Mat4.identity();
         model_transform=Mat4.scale([10,0,10]).times(model_transform);
         model_transform=Mat4.translation([0,-8,0]).times(model_transform);
+        this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
+
+        model_transform = Mat4.identity();
+        model_transform=Mat4.scale([3,4,0.1]).times(model_transform);
+        model_transform=Mat4.translation([0,-4,-9.9]).times(model_transform);
         this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
       }
