@@ -439,6 +439,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       } );
       canvas  .addEventListener( "mousedown", e => { 
         e.preventDefault(); //this.mouse.anchor      = mouse_position(e); 
+        canvas.requestPointerLock();
       } );
       canvas  .addEventListener( "mousemove", e => { 
         //e.preventDefault(); this.mouse.from_center = mouse_position(e); 
