@@ -36,11 +36,11 @@
         }
     };
 
-    document.onkeydown = function(e) {
-        return ;
-        var code = e.keyCode;
+    document.onkeydown = function() {
+        //return ;
+        var code = window.event;
 
-        switch(code) {
+        switch(code.keyCode) {
             case 87:
                 // 前
                 camera.mz += 0.4*Math.cos(camera.rx)*Math.cos(camera.ry);
