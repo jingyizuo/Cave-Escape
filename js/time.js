@@ -1,6 +1,6 @@
 (function() {
     var time = {
-        curr: 10,
+        curr: 100,
         timer: null,
         dom: document.getElementById('bgTime'),
         start: function() {

@@ -43,25 +43,25 @@
         switch(code.keyCode) {
             case 87:
                 // 前
-                camera.mz += 0.4*Math.cos(camera.rx)*Math.cos(camera.ry);
-                camera.mx -= 0.4*Math.sin(camera.rx);
-                camera.my -= 0.4*Math.sin(camera.ry);
+                camera.mz += 0.8*Math.cos(camera.rx)*Math.cos(camera.ry);
+                camera.mx -= 0.8*Math.sin(camera.rx);
+                //camera.my -= 0.8*Math.sin(camera.ry);
                 break;
             case 83:
                 // 后
-                camera.mz -= 0.4*Math.cos(camera.rx)*Math.cos(camera.ry);
-                camera.mx += 0.4*Math.sin(camera.rx);
-                camera.my += 0.4*Math.sin(camera.ry);
+                camera.mz -= 0.8*Math.cos(camera.rx)*Math.cos(camera.ry);
+                camera.mx += 0.8*Math.sin(camera.rx);
+                //camera.my += 0.8*Math.sin(camera.ry);
                 break;
             case 65:
                 // 左
-                camera.mx += 0.4*Math.cos(camera.rx);
-                camera.mz += 0.4*Math.sin(camera.rx);
+                camera.mx += 0.8*Math.cos(camera.rx);
+                camera.mz += 0.8*Math.sin(camera.rx);
                 break;
             case 68:
                 // 右
-                camera.mx -= 0.4*Math.cos(camera.rx);
-                camera.mz -= 0.4*Math.sin(camera.rx);
+                camera.mx -= 0.8*Math.cos(camera.rx);
+                camera.mz -= 0.8*Math.sin(camera.rx);
                 break;
         }
     };

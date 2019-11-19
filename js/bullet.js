@@ -46,7 +46,7 @@ var Bullet = function(webgl) {
 
             
         },
-        draw: function() {
+        /*draw: function() {
             if(!this.model) {
                 var sx = Math.sin(camera.ry);
                 var cx = Math.cos(camera.ry);
@@ -56,7 +56,7 @@ var Bullet = function(webgl) {
                     cy/15,    0,      -sy/15,    0,
                     sy*sx/15, cx/15,  sx*cy/15,  0,
                     sy*cx/15, -sx/15, cx*cy/15,  0,
-                    0,0,0,1
+                    0       ,      0,        0,  1
                 ];
 
                 this.init();
@@ -79,7 +79,7 @@ var Bullet = function(webgl) {
             webgl.drawArrays(webgl.POINTS, 0, this.length);
         
             this.tick();
-        }
+        }*/
     };
 
     
