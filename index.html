@@ -6,8 +6,13 @@
 <script src="tiny-graphics.js" ></script>  <!--  Javascript "include" files.  Any code in them gets executed as part of the page loading. //-->
 <script src= "dependencies.js" ></script>
 <script src=   "main-scene.js" ></script>
+<script src='https://wow.techbrood.com/libs/jquery/jquery-1.11.1.min.js'></script>
+<script src="fire.js"></script>
 <style>
   * { font-family: monospace }
+  #surface{
+    position: absolute;
+  }
   body { background: DarkGray }
   div { background: white }
   canvas { width: 1080px; height: 600px; margin-bottom:-3px }
@@ -42,7 +47,9 @@
   }
 </style>
 </head><body>       <!-- Begin typing the next of your web page here. //-->
-<div id="main-canvas" class="canvas-widget"></div>
+<div id="main-canvas" class="canvas-widget">
+         <canvas id="surface"></canvas>
+</div>
 <div class="aim"></div>
 <script> "use strict"     // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE *********************
                                            // Use this code to embed a widget into any web page.  The widget inclues a 3D WebGL area
@@ -50,7 +57,7 @@
   const scenes = [ "Assignment_One_Scene" ]; // First, list the names of scenes we will add to our canvas.  These will register themselves
                                            // with this widget's Canvas_Manager so that their code can be called upon every time a
                                            // draw / keyboard / mouse event happens on the web page.
-  new Canvas_Widget( "main-canvas", scenes,false );             // Use the Canvas_Widget class to display the WebGL demo.  Pass in
+  new Canvas_Widget( "main-canvas", scenes );             // Use the Canvas_Widget class to display the WebGL demo.  Pass in
                                                           // the name of the HTML element we are to replace with the widget.
 
                                                           function getAngle(A, B) {
@@ -76,5 +83,6 @@ function normalize3D(A) {
     return [0, 0, 0];
   return [A[0] / n, A[1] / n, A[2] / n];
 }
+
 </script>
 </body></html>
