@@ -415,7 +415,8 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
                                                    // to help you explore what's in it.
   constructor( context, control_box, canvas = context.canvas )
     { super( context, control_box );
-      [ this.context, this.roll, this.look_around_locked, this.invert ] = [ context, 0, true, true ];                  // Data members
+      [ this.context, this.roll, this.look_around_locked, this.invert ] = [ context, Vec.of(0,0), true, true ];                  // Data members
+      [ this.rx, this.ry]=[ 0, 0];
       [ this.thrust, this.pos, this.z_axis ] = [ Vec.of( 0,0,0 ), Vec.of( 0,0,0 ), Vec.of( 0,0,0 ) ];
                                                  // The camera matrix is not actually stored here inside Movement_Controls; instead, track
                                                  // an external matrix to modify. This target is a reference (made with closures) kept
@@ -425,8 +426,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       context.globals.movement_controls_target = function(t) { return context.globals.graphics_state.camera_transform };
       context.globals.movement_controls_invert = this.will_invert = () => true;
       context.globals.has_controls = true;
-      this.up_down=0;
-      this.total_updown=0;
+      this.ang=0;
       [ this.radians_per_frame, this.meters_per_frame, this.speed_multiplier ] = [ 1/200, 20, 1 ];
       
       // *** Mouse controls: ***
@@ -439,12 +439,28 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       } );
       canvas  .addEventListener( "mousedown", e => { 
         e.preventDefault(); //this.mouse.anchor      = mouse_position(e); 
+        canvas.requestPointLock();
       } );
+      
       canvas  .addEventListener( "mousemove", e => { 
-        //e.preventDefault(); this.mouse.from_center = mouse_position(e); 
-        this.mouse.from_center = Vec.of(e.movementX,e.movementY); 
-        this.roll=this.mouse.from_center[0];
-        this.up_down=this.mouse.from_center[1];
+        //e.preventDefault(); 
+        this.mouse.from_center = mouse_position(e); 
+        //this.mouse.from_center = Vec.of(e.movementX,e.movementY); 
+        //this.roll=this.mouse.from_center[0];
+        //this.roll=Vec.of(e.movementX,e.movementY);
+        /*if(document.pointerLockElement)
+        {
+          this.roll[0]=e.movementX/200;
+          this.roll[1]=-(e.movementY/200);
+          this.rx+=e.movementX/200;
+          this.ry-=e.movementY/200;
+        }*/
+        this.roll[0]=e.movementX/200;
+        this.roll[1]=-(e.movementY/200);
+        this.rx+=e.movementX/200;
+        this.ry-=e.movementY/200;
+        
+        
       } );
       canvas  .addEventListener( "mouseout",  e => { 
         if( !this.mouse.anchor ) 
@@ -474,6 +490,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       this.new_line();
       this.live_string( box => box.textContent = "Position: " + this.pos[0].toFixed(2) + ", " + this.pos[1].toFixed(2) 
                                                        + ", " + this.pos[2].toFixed(2) );
+      this.live_string( box => box.textContent = "angle: " + this.ang );                                                 
       this.new_line();        // The facing directions are actually affected by the left hand rule:
       this.live_string( box => box.textContent = "Facing: " + ( ( this.z_axis[0] > 0 ? "West " : "East ")
                    + ( this.z_axis[1] > 0 ? "Down " : "Up " ) + ( this.z_axis[2] > 0 ? "North" : "South" ) ) );
@@ -498,11 +515,50 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
           do_operation( Mat4.rotation( sign * velocity, Vec.of( i, 1-i, 0 ) ) );   // On X step, rotate around Y axis, and vice versa.
         }
       
+      
       if( this.roll != 0 ){
-        //do_operation( Mat4.rotation( -this.total_updown, Vec.of(this.up_down, 0,0 ) ) );
-        do_operation( Mat4.rotation( sign * .02, Vec.of(0, this.roll,0 ) ) );
-        //do_operation( Mat4.rotation( this.total_updown, Vec.of(this.up_down, 0,0 ) ) );
+        var eye=this.pos;
+        var rx=this.roll[0];
+        var ry=this.roll[1];
+        var mx=this.pos[0];
+        var my=this.pos[1];
+        var mz=this.pos[2];
+        var F=Vec.of(Math.sin(rx)*Math.cos(ry), Math.sin(ry), -Math.cos(rx) * Math.cos(ry)).normalized();
+        var at=Vec.of(F[0]+mx,F[1]+my,F[2]+mz);
+        var angle=getAngle([0, -1], [F[0], F[2]]);
+        var angle2=getAngle([0,-1],[F[1],-Math.sqrt(F[0]*F[0]+F[2]*F[2])]);
+        var R = Vec.of(Math.cos(angle), 0, Math.sin(angle));
+        var up=R.cross(F);
+        var z=Vec.of(at[0]-eye[0],at[1]-eye[1],at[2]-eye[2]);
+        var x=z.cross(up).normalized();
+        var y=x.cross(z).normalized();
+        //if(this.ry!=-Math.PI/2 || this.ry!=Math.PI/2)
+        var s=Mat.of(Vec.of(R[0], R[1], R[2], R[0] * mx + R[1] * my + R[2] * mz),
+        Vec.of(up[0], up[1], up[2], up[0] * mx + up[1] * my + up[2] * mz),
+        Vec.of(-F[0], -F[1], -F[2], -F[0] * mx - F[1] * my - F[2] * mz),
+        Vec.of(0,0,0,1)
+        );
+        //do_operation(s);
+        this.ang-=angle2;
+        if(this.ang >= Math.PI/2) {
+          this.ang = Math.PI/2;
+          angle2=0;
+        } 
+        else if(this.ang <= -Math.PI/2) {
+          this.ang = -Math.PI/2;
+          angle2=0;
+        }
+        do_operation(Mat4.rotation(-angle2,Vec.of(1,0,0)));
+        
+        do_operation(Mat4.rotation(-this.ang,Vec.of(1,0,0)));
+        do_operation(Mat4.rotation(angle,Vec.of(0,1,0)));
+        do_operation(Mat4.rotation(this.ang,Vec.of(1,0,0)));
+        //do_operation(Mat4.rotation(angle,Vec.of(0,1,0)));
+        //do_operation(Mat4.translation([ -x.dot( eye ), -y.dot( eye ), -z.dot( eye ) ])
+        //.times( Mat.of( x.to4(0), y.to4(0), z.to4(0), Vec.of( 0,0,0,1 ) ) ));
       } 
+      
+      
       
                                                   // Now apply translation movement of the camera, in the newest local coordinate frame.
       do_operation( Mat4.translation( this.thrust.times( sign * meters_per_frame ) ) );
@@ -519,7 +575,9 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
   display( graphics_state, dt = graphics_state.animation_delta_time / 1000 )    // Camera code starts here.
     { const m = this.speed_multiplier * this. meters_per_frame,
             r = this.speed_multiplier * this.radians_per_frame;
+      
       this.first_person_flyaround( dt * r/10, dt * m/10 );     // Do first-person.  Scale the normal camera aiming speed by dt for smoothness.
+      
       if( this.mouse.anchor )                            // Also apply third-person "arcball" camera mode if a mouse drag is occurring.  
         this.third_person_arcball( dt * r);           
       
