@@ -427,6 +427,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       context.globals.movement_controls_invert = this.will_invert = () => true;
       context.globals.has_controls = true;
       this.ang=0;
+      this.move=0;
       [ this.radians_per_frame, this.meters_per_frame, this.speed_multiplier ] = [ 1/200, 20, 1 ];
       
       // *** Mouse controls: ***
@@ -436,6 +437,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
                                         // Set up mouse response.  The last one stops us from reacting if the mouse leaves the canvas.
       document.addEventListener( "mouseup",   e => { 
         this.mouse.anchor = undefined;
+        
       } );
       canvas  .addEventListener( "mousedown", e => { 
         e.preventDefault(); //this.mouse.anchor      = mouse_position(e); 
@@ -444,24 +446,26 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       
       canvas  .addEventListener( "mousemove", e => { 
         //e.preventDefault(); 
-        this.mouse.from_center = mouse_position(e); 
+        //this.mouse.from_center = mouse_position(e); 
         //this.mouse.from_center = Vec.of(e.movementX,e.movementY); 
         //this.roll=this.mouse.from_center[0];
         //this.roll=Vec.of(e.movementX,e.movementY);
         if(document.pointerLockElement)
         {
+          
           this.roll[0]=e.movementX/200;
           this.roll[1]=-(e.movementY/200);
           this.rx+=e.movementX/200;
           this.ry-=e.movementY/200;
         }/*
+        
         this.roll[0]=e.movementX/200;
         this.roll[1]=-(e.movementY/200);
         this.rx+=e.movementX/200;
         this.ry-=e.movementY/200;*/
         
         
-      } );
+      });
       canvas  .addEventListener( "mouseout",  e => { 
         if( !this.mouse.anchor ) 
           this.mouse.from_center.scale(0);
@@ -491,7 +495,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       this.live_string( box => box.textContent = "Position: " + this.pos[0].toFixed(2) + ", " + this.pos[1].toFixed(2) 
                                                        + ", " + this.pos[2].toFixed(2) );
                                                        this.new_line();
-      this.live_string( box => box.textContent = "angle: " + this.ang );                                                 
+      this.live_string( box => box.textContent = "angle: " + this.mouse.from_center );                                                 
       this.new_line();        // The facing directions are actually affected by the left hand rule:
       this.live_string( box => box.textContent = "Facing: " + ( ( this.z_axis[0] > 0 ? "West " : "East ")
                    + ( this.z_axis[1] > 0 ? "Down " : "Up " ) + ( this.z_axis[2] > 0 ? "North" : "South" ) ) );
@@ -517,7 +521,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
         }
       
       
-      if( this.roll != 0 ){
+      if( this.roll != 0){
         var eye=this.pos;
         var rx=this.roll[0];
         var ry=this.roll[1];
@@ -534,11 +538,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
         var x=z.cross(up).normalized();
         var y=x.cross(z).normalized();
         //if(this.ry!=-Math.PI/2 || this.ry!=Math.PI/2)
-        var s=Mat.of(Vec.of(R[0], R[1], R[2], R[0] * mx + R[1] * my + R[2] * mz),
-        Vec.of(up[0], up[1], up[2], up[0] * mx + up[1] * my + up[2] * mz),
-        Vec.of(-F[0], -F[1], -F[2], -F[0] * mx - F[1] * my - F[2] * mz),
-        Vec.of(0,0,0,1)
-        );
+        
         //do_operation(s);
         this.ang-=angle2;
         if(this.ang >= Math.PI/6) {

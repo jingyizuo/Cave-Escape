@@ -50,7 +50,7 @@
   const scenes = [ "Assignment_One_Scene" ]; // First, list the names of scenes we will add to our canvas.  These will register themselves
                                            // with this widget's Canvas_Manager so that their code can be called upon every time a
                                            // draw / keyboard / mouse event happens on the web page.
-  new Canvas_Widget( "main-canvas", scenes,false );             // Use the Canvas_Widget class to display the WebGL demo.  Pass in
+  new Canvas_Widget( "main-canvas", scenes );             // Use the Canvas_Widget class to display the WebGL demo.  Pass in
                                                           // the name of the HTML element we are to replace with the widget.
 
                                                           function getAngle(A, B) {
@@ -76,5 +76,6 @@ function normalize3D(A) {
     return [0, 0, 0];
   return [A[0] / n, A[1] / n, A[2] / n];
 }
+
 </script>
 </body></html>
