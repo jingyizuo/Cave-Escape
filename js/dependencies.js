@@ -439,7 +439,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       } );
       canvas  .addEventListener( "mousedown", e => { 
         e.preventDefault(); //this.mouse.anchor      = mouse_position(e); 
-        canvas.requestPointLock();
+        canvas.requestPointerLock();
       } );
       
       canvas  .addEventListener( "mousemove", e => { 
@@ -448,17 +448,17 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
         //this.mouse.from_center = Vec.of(e.movementX,e.movementY); 
         //this.roll=this.mouse.from_center[0];
         //this.roll=Vec.of(e.movementX,e.movementY);
-        /*if(document.pointerLockElement)
+        if(document.pointerLockElement)
         {
           this.roll[0]=e.movementX/200;
           this.roll[1]=-(e.movementY/200);
           this.rx+=e.movementX/200;
           this.ry-=e.movementY/200;
-        }*/
+        }/*
         this.roll[0]=e.movementX/200;
         this.roll[1]=-(e.movementY/200);
         this.rx+=e.movementX/200;
-        this.ry-=e.movementY/200;
+        this.ry-=e.movementY/200;*/
         
         
       } );
@@ -490,6 +490,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       this.new_line();
       this.live_string( box => box.textContent = "Position: " + this.pos[0].toFixed(2) + ", " + this.pos[1].toFixed(2) 
                                                        + ", " + this.pos[2].toFixed(2) );
+                                                       this.new_line();
       this.live_string( box => box.textContent = "angle: " + this.ang );                                                 
       this.new_line();        // The facing directions are actually affected by the left hand rule:
       this.live_string( box => box.textContent = "Facing: " + ( ( this.z_axis[0] > 0 ? "West " : "East ")
@@ -541,15 +542,16 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
         //do_operation(s);
         this.ang-=angle2;
         if(this.ang >= Math.PI/6) {
+          angle2=this.ang+angle2-Math.PI/6;
           this.ang = Math.PI/6;
-          angle2=0;
+          //angle2=0;
         } 
         else if(this.ang <= -Math.PI/6) {
+          angle2=this.ang+angle2+Math.PI/6;
           this.ang = -Math.PI/6;
-          angle2=0;
+          //angle2=0;
         }
         do_operation(Mat4.rotation(-angle2,Vec.of(1,0,0)));
-        
         do_operation(Mat4.rotation(-this.ang,Vec.of(1,0,0)));
         do_operation(Mat4.rotation(angle,Vec.of(0,1,0)));
         do_operation(Mat4.rotation(this.ang,Vec.of(1,0,0)));
