@@ -1,326 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>index</title>
+<!-- Graphics Example Code.  index.html - The web page document containing the canvas (drawing surface), that launches your javascript files. //-->
+<!DOCTYPE html> <html> <head> <meta charset="UTF-8"/> <link rel="icon" href="assets/fav.ico">
+    <script> window.tiny_graphics = {};             // Store all our JavaScipt code inside of classes here.
+             window.classes = {}                    
+             </script>        
+    <script src="tiny-graphics.js" ></script>  <!--  Javascript "include" files.  Any code in them gets executed as part of the page loading. //-->
+    <script src= "dependencies.js" ></script>
+    <script src=   "main-scene.js" ></script>
     <style>
-        @keyframes opacity {
-            from {
-                opacity: 0;
-            }
-            23% {
-                opacity: 1;
-            }
-            46% {
-                opacity: 0;
-            }
-            69% {
-                opacity: 1;
-            }
-            92% {
-                opacity: 0;
-            }
-            to {
-                opacity: 0;
-            }
-        }
-        html, body {
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
-            font-family: "Segoe UI Light","Segoe UI","Microsoft Jhenghei","微软雅黑",sans-serif;
-        }
-        html {
-            height: 100%;
-        }
-        body {
-            width: 100%;
-            height: 100%;
-        }
-        canvas {
-            display: block;
-            margin: 0 auto;
-            width: 100%;
-            height: 100%;
-        }
-        html {
-            background-color: black;
-        }
-        .aim {
-            position: absolute;
-            width: 56px;
-            height: 56px;
-            left: 50%;
-            top: 50%;
-            background-image: url(./aim.png);
-            pointer-events: none;
-            transform-origin: center center;
-            transform: translate(-50%, -50%) scale(.5, .5);
-        }
-        .score {
-            width: 180px;
-            height: 30px;
-            line-height: 30px;
-            font-size: 30px;
-            position: absolute;
-            color: #6a0000;
-            top: 5px;
-            left: 15px;
-            font-weight: bold;
-            text-shadow: 1px 1px white;
-        }
-        .score span {
-            font-style: italic;
-        }
-        .time {
-            width: 180px;
-            height: 30px;
-            line-height: 30px;
-            font-size: 30px;
-            position: absolute;
-            color: #6a0000;
-            top: 45px;
-            left: 15px;
-            font-weight: bold;
-            text-shadow: 1px 1px white;
-        }
-        .time span {
-            font-style: italic;
-        }
-        .prompt {
-            width: 300px;
-            height: 60px;
-            line-height: 30px;
-            font-size: 30px;
-            color: #5eefff;
-            text-shadow: 1px 1px black;
-            background-image: url(./arrow.png);
-            background-position: 93px 13px;
-            background-repeat: no-repeat;
-            position: absolute;
-            left: 50%;
-            top: 40%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            pointer-events: none;
-            opacity: 0;
-        }
-        .animate {
-            animation-name: opacity;
-            animation-duration: 3s;
-        }
+      * { font-family: monospace }
+      body { background: DarkGray }
+      div { background: white }
+      canvas { width: 1080px; height: 600px; margin-bottom:-3px }
+      .canvas-widget { width: 1080px; background: DimGray }
+      table { border-collapse: collapse; display:block; overflow-x: auto; }
+      table.control-box { width: 1080px; border:0; margin:0; max-height:380px; transition:.5s; overflow-y:scroll; background:DimGray }
+      table.control-box:hover { max-height:500px }
+      table.control-box td { overflow:hidden; border:0; background:DimGray; border-radius:30px }
+      table.control-box td .control-div { background: #EEEEEE; height:338px; padding: 5px 5px 5px 30px; box-shadow: 25px 0px 60px -15px inset }
+      table.control-box td * { background:transparent }
+      table.control-box .control-div td { border-radius:unset }
+      table.control-box .control-title { padding:7px 40px; color:white; background:DarkSlateGray; box-shadow: 25px 0px 70px -15px inset black }
+      .live_string { display:inline-block; background: unset }
+      table, th, td { border: 2px solid black; vertical-align: top; white-space: nowrap }
+      button { background: #4C9F50; color: white; padding: 6px; border-radius:9px;
+               box-shadow: 4px 6px 16px 0px rgba(0,0,0,0.3); transition: background .3s, transform .3s }
+      button:hover, button:focus { transform: scale(1.3); color:gold }
+      .link { text-decoration:underline; cursor: pointer }
+      .show { transform: scaleY(1); height:200px; overflow:auto }
+      .hide { transform: scaleY(0); height:0px; overflow:hidden  }
     </style>
-    <script id="shader-vs" type="x-shader/vertex-shader">
-        attribute vec3 aPosition;
-        attribute vec3 aColor;
-        attribute vec4 aFrameColor;
-
-        uniform mat4 uPMatrix;
-        uniform mat4 uMMatrix;
-        uniform mat4 uVMatrix;
-
-        uniform bool uIsFrame;
-
-        varying vec4 vColor;
-        varying vec4 vPosition;
-        
-        void main() {
-            gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aPosition, 1.0);
-            gl_PointSize = 3.0;
-            if(uIsFrame) {
-                vColor = aFrameColor;
-            } else {
-                vColor = vec4(aColor, 1.0);    
+    </head><body>       <!-- Begin typing the next of your web page here. //-->
+    
+    <div id="main-canvas" class="canvas-widget"></div>
+    <script> "use strict"     // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
+                                               // Use this code to embed a widget into any web page.  The widget inclues a 3D WebGL area
+                                               // (an HTML canvas) and various panels of controls.
+      const scenes = [ "Assignment_One_Scene" ]; // First, list the names of scenes we will add to our canvas.  These will register themselves
+                                               // with this widget's Canvas_Manager so that their code can be called upon every time a 
+                                               // draw / keyboard / mouse event happens on the web page.
+      new Canvas_Widget( "main-canvas", scenes );             // Use the Canvas_Widget class to display the WebGL demo.  Pass in
+                                                              // the name of the HTML element we are to replace with the widget.
+            function getAngle(A, B) {
+                if(B[0] === 0 && A[0] === 0) {
+                    return 0;
+                }
+    
+                var diffX = B[0] - A[0];
+                var diffY = B[1] - A[1];
+    
+                var a = A[0] * B[0] + A[1] * B[1];
+                var b = Math.sqrt(A[0] * A[0] + A[1] * A[1]);
+                var c = Math.sqrt(B[0] * B[0] + B[1] * B[1]);
+    
+                return (B[0] / Math.abs(B[0])) *  Math.acos(a / b / c);
             }
-        }
-    </script>
-    <script id="shader-fs" type="x-shader/fragment-shader">
-        precision highp float;
-
-        varying vec4 vColor;
-        varying vec4 vPosition;
-
-        void main() {
-            gl_FragColor = vColor;
-        }
-    </script>
-</head>
-<body>
-    <canvas id="c" width="1200" height="800"></canvas>
-    <div class="aim"></div>
-    <div class="score">分数： <span id="bgScore">0</span></div>
-    <div class="time">时间： <span id="bgTime">10</span></div>
-    <div id="prompt" class="prompt">第一关</div>
-    <audio id="bgSound1"></audio>
-    <audio id="bgSound2"></audio>
-    <script>
-        var oC = document.getElementById('c');
-        var webgl = oC.getContext('webgl');
-
-        var width = oC.width;
-        var height = oC.height;
-    </script>
-    <script src="./js/gun.js"></script>
-    <script src="./js/scene.js"></script>
-    <script src="./js/camera.js"></script>
-    <script src="./js/target.js"></script>
-    <script src="./js/level.js"></script>
-    <script src="./js/bullet.js"></script>
-    <!-- <script src="./test.js"></script> -->
-    <script src="./js/time.js"></script>
-    <script src="./js/audio.js"></script>
-    <script src="./js/score.js"></script>
-    <script src="./js/tiny-graphics.js"></script>
-    <script src="./js/dependencies.js"></script>
-    <script>
-        var vsScript = document.getElementById('shader-vs').innerText;
-        var fsScript = document.getElementById('shader-fs').innerText;
-
-        var vs = webgl.createShader(webgl.VERTEX_SHADER);
-        var fs = webgl.createShader(webgl.FRAGMENT_SHADER);
-
-        webgl.shaderSource(vs, vsScript);
-        webgl.shaderSource(fs, fsScript);
-
-        webgl.compileShader(vs);
-        webgl.compileShader(fs);
-
-        if(!webgl.getShaderParameter(vs, webgl.COMPILE_STATUS)) {
-            alert('vs error');
-        }
-        if(!webgl.getShaderParameter(fs, webgl.COMPILE_STATUS)) {
-            alert('fs error');
-        }
-
-        var program = webgl.createProgram();
-
-        webgl.attachShader(program, vs);
-        webgl.attachShader(program, fs);
-
-        webgl.linkProgram(program);
-        webgl.useProgram(program);
-
-        var aPosition, aColor;
-
-        aPosition = webgl.getAttribLocation(program, 'aPosition');
-        aColor = webgl.getAttribLocation(program, 'aColor');
-        aFrameColor = webgl.getAttribLocation(program, 'aFrameColor');
-
-        webgl.enableVertexAttribArray(aPosition);
-        webgl.enableVertexAttribArray(aColor);
-        webgl.disableVertexAttribArray(aFrameColor);
-
-        var uPMatrix, uMMatrix, uVMatrix;
-
-        var uMMatrix_1, uMMatrix_2;
-
-        uPMatrix = webgl.getUniformLocation(program, 'uPMatrix');
-        uMMatrix = webgl.getUniformLocation(program, 'uMMatrix');
-        uVMatrix = webgl.getUniformLocation(program, 'uVMatrix');
-        uIsFrame = webgl.getUniformLocation(program, 'uIsFrame');
-
-        var i, j, a;
-
-        var projection = (function(a, r, n, f) {
-            a = 1 / Math.tan(a * Math.PI / 360);
-
-            return [
-                a/r, 0, 0, 0,
-                0, a, 0, 0,
-                0, 0, -(f+n)/(f-n), -1,
-                0, 0, -2*f*n/(f-n), 0
-            ];
-        })(90, width / height, 0.1, 1000);
-
-        webgl.uniformMatrix4fv(
-            uPMatrix, false, projection
-        );
-
-        webgl.uniformMatrix4fv(
-            uVMatrix, false, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]
-        );
-
-        var texture = webgl.createTexture();
-
-        webgl.activeTexture(webgl.TEXTURE0);
-        webgl.bindTexture(webgl.TEXTURE_2D, texture);
-        webgl.texImage2D(webgl.TEXTURE_2D, 0, webgl.RGB, width, height, 0, webgl.RGB, webgl.UNSIGNED_BYTE, null);
-
-        var renderbuffer = webgl.createRenderbuffer();
-        webgl.bindRenderbuffer(webgl.RENDERBUFFER, renderbuffer);
-        webgl.renderbufferStorage(webgl.RENDERBUFFER, webgl.DEPTH_COMPONENT16, width, height);
-
-        var framebuffer = webgl.createFramebuffer();
-        webgl.bindFramebuffer(webgl.FRAMEBUFFER, framebuffer);
-        webgl.framebufferTexture2D(webgl.FRAMEBUFFER, webgl.COLOR_ATTACHMENT0, webgl.TEXTURE_2D, texture, 0);
-        webgl.framebufferRenderbuffer(webgl.FRAMEBUFFER, webgl.DEPTH_ATTACHMENT, webgl.RENDERBUFFER, renderbuffer);
-
-        webgl.bindTexture(webgl.TEXTURE_2D, null);
-        webgl.bindRenderbuffer(webgl.RENDERBUFFER, null);
-        webgl.bindFramebuffer(webgl.FRAMEBUFFER, null);
-
-        var gun = Gun(webgl);
-        var scenes = Scenes(webgl);
-        var targets = Target(webgl);
-        var bullet = Bullet(webgl);
-        var boom = false;
-
-        level.init();
-        
-
-        webgl.clearColor(1, 1, 1, 1.0);
-        webgl.clearDepth(1.0);
-
-        webgl.enable(webgl.DEPTH_TEST);
-        webgl.depthFunc(webgl.LESS);
-
-        webgl.enable(webgl.BLEND);
-
-        var timer = setInterval(function() {
-            webgl.clear(webgl.COLOR_BUFFER_BIT | webgl.DEPTH_BUFFER_BIT);
-            
-            gun.draw();
-            scenes.draw();
-            targets.draw();
-
-            if(boom) {
-                bullet.draw();
+            function cross3D(A, B){
+                return [A[1] * B[2] - A[2] * B[1],
+                        A[2] * B[0] - A[0] * B[2],
+                        A[0] * B[1] - A[1] * B[0]];
             }
-            
-        }, 16);
-
-        function dot3D(A, B) {
-            return A[0] * B[0] + A[1] * B[1] + A[2] * B[2];
-        }
-
-        function normalize3D(A) {
-            var n = Math.sqrt(A[0] * A[0] + A[1] * A[1] + A[2] * A[2]);
-            if(!n)
-                return [0, 0, 0];
-            return [A[0] / n, A[1] / n, A[2] / n];
-        }
-
-        function cross3D(A, B){
-            return [A[1] * B[2] - A[2] * B[1],
-                    A[2] * B[0] - A[0] * B[2],
-                    A[0] * B[1] - A[1] * B[0]];
-        }
-
-        function getAngle(A, B) {
-            if(B[0] === 0 && A[0] === 0) {
-                return 0;
-            }
-
-            var diffX = B[0] - A[0];
-            var diffY = B[1] - A[1];
-
-            var a = A[0] * B[0] + A[1] * B[1];
-            var b = Math.sqrt(A[0] * A[0] + A[1] * A[1]);
-            var c = Math.sqrt(B[0] * B[0] + B[1] * B[1]);
-
-            return (B[0] / Math.abs(B[0])) *  Math.acos(a / b / c);
-        }
-        
     </script>
-</body>
-</html>
+    
+    </body></html>
