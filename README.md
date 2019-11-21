@@ -20,9 +20,10 @@ Bug
 
 处理
 1. bug
-2. 光
-3. import
-4. 命中检测
+2. 光／
+3. 光移动
+4. import
+5. 命中检测
 
 
 Our project is a first-person room escape game. The player will control a person locked in a room and try to find clues and props in order to get out. 
