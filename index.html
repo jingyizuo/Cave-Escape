@@ -28,10 +28,23 @@
       .link { text-decoration:underline; cursor: pointer }
       .show { transform: scaleY(1); height:200px; overflow:auto }
       .hide { transform: scaleY(0); height:0px; overflow:hidden  }
+        .aim {
+    background: transparent;
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    left: 50%;
+    top: 50%;
+    background-image: url(./aim.png);
+    pointer-events: none;
+    transform-origin: center center;
+    transform: translate(-50%, -50%) scale(0.8,0.8);
+  }
     </style>
     </head><body>       <!-- Begin typing the next of your web page here. //-->
     
     <div id="main-canvas" class="canvas-widget"></div>
+    <div class="aim"></div>
     <script> "use strict"     // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
                                                // Use this code to embed a widget into any web page.  The widget inclues a 3D WebGL area
                                                // (an HTML canvas) and various panels of controls.
