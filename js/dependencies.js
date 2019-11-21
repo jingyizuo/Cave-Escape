@@ -439,11 +439,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       } );
       canvas  .addEventListener( "mousedown", e => { 
         e.preventDefault(); //this.mouse.anchor      = mouse_position(e); 
-<<<<<<< HEAD
         canvas.requestPointLock();
-=======
-        canvas.requestPointerLock();
->>>>>>> 12b24e12793a4443e5cfd2b353f151cde492ae57
       } );
       
       canvas  .addEventListener( "mousemove", e => { 
@@ -544,12 +540,12 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
         );
         //do_operation(s);
         this.ang-=angle2;
-        if(this.ang >= Math.PI/2) {
-          this.ang = Math.PI/2;
+        if(this.ang >= Math.PI/6) {
+          this.ang = Math.PI/6;
           angle2=0;
         } 
-        else if(this.ang <= -Math.PI/2) {
-          this.ang = -Math.PI/2;
+        else if(this.ang <= -Math.PI/6) {
+          this.ang = -Math.PI/6;
           angle2=0;
         }
         do_operation(Mat4.rotation(-angle2,Vec.of(1,0,0)));
