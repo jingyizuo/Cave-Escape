@@ -112,6 +112,18 @@ class Assignment_One_Scene extends Scene_Component
 
         this.lights = [ new Light( Vec.of( 0,5,5,1 ), Color.of( 1, .4, 1, 1 ), 100000 ) ];
 
+        this.materials =
+          { sun_material:     context.get_instance( Phong_Shader ).material( Color.of( 0,0,1,1 ), { ambient:1 } ),
+            p1_material:     context.get_instance( Phong_Shader ).material( Color.of( 0.72, 0.74, 0.9,1 ), { diffusivity: 1} ),
+            p2_material:     context.get_instance( Phong_Shader ).material( Color.of( 0.1,0.5,0.48,1 ), { diffusivity: .3 ,specular: 1} ),
+            p3_material:     context.get_instance( Phong_Shader ).material( Color.of( 0.9,0.5,0.39,1 ), { diffusivity: 1 ,specular: 1 } ),
+            p4_material:     context.get_instance( Phong_Shader ).material( Color.of( 0.1,0.1,0.9,1 ), { specular: 0.8 } ),
+            p5_material:     context.get_instance( Phong_Shader ).material( Color.of( 0.74,0.7,0.76,1 ), { diffusivity: 1 ,specular: 1 } )
+
+
+                                // TODO:  Fill in as many additional material objects as needed in this key/value table.
+                                //        (Requirement 1)
+          }
         
         this.rgba=[];
         this.outline_flag=false;
@@ -171,12 +183,16 @@ class Assignment_One_Scene extends Scene_Component
         return model_transform;
       }
     display( graphics_state )
-      { graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
+      { 
+        let light=new Light( Vec.of( 0,0,0,1 ), Color.of(0,0,0,1), 5 );
+        this.lights.pop();
+        this.lights.push(light);
+        graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
         const blue = Color.of( 0,0,1,1 ), yellow = Color.of( 1,1,0,1 );
         let model_transform = Mat4.identity();
         model_transform=Mat4.scale([10,8,0]).times(model_transform);
         model_transform=Mat4.translation([0,0,-10]).times(model_transform);
-        this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: blue }));
+        this.shapes.box.draw( graphics_state, model_transform, this.materials.p2_material);
         model_transform = Mat4.identity();
         model_transform=Mat4.scale([0,8,10]).times(model_transform);
         model_transform=Mat4.translation([-10,0,0]).times(model_transform);
@@ -188,16 +204,16 @@ class Assignment_One_Scene extends Scene_Component
         model_transform = Mat4.identity();
         model_transform=Mat4.scale([10,8,0]).times(model_transform);
         model_transform=Mat4.translation([0,0,10]).times(model_transform);
-        //this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: blue }));
+        this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: blue }));
         model_transform = Mat4.identity();
         model_transform=Mat4.scale([10,0,10]).times(model_transform);
         model_transform=Mat4.translation([0,-8,0]).times(model_transform);
         this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
-
+/*
         model_transform = Mat4.identity();
         model_transform=Mat4.scale([3,4,0.1]).times(model_transform);
         model_transform=Mat4.translation([0,-4,-9.9]).times(model_transform);
-        this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
+        this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));*/
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
       }
   }
