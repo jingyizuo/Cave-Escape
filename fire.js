@@ -3,10 +3,11 @@ $(document).ready(function() {
     // Set canvas drawing surface
     var space = document.getElementById("surface");
     var surface = space.getContext("2d");
+    surface.scale(3,3);
   //  surface.scale(1, 1);
     // Set Particles
     var particles = [];
-    var particle_count = 60;
+    var particle_count = 80;
     for (var i = 0; i < particle_count; i++) {
         particles.push(new particle());
     }
@@ -15,9 +16,10 @@ $(document).ready(function() {
     var canvasWidth = 320;
     var canvasHeight = 480;
     $("#surface").css({
-        width: 300,
-        height: 500
+        width: 800,
+        height: 1200
     });
+
 
     // shim layer with setTimeout fallback from Paul Irish
     window.requestAnimFrame = (function() {
@@ -26,15 +28,14 @@ $(document).ready(function() {
                 window.setTimeout(callback,1);
             };
     })();
-
     function particle() {
         this.speed = {
-            x: -1 + Math.random() * 2,
-            y: -5 + Math.random() * 5
+            x: -1.5 + Math.random() * 2,
+            y: -3 + Math.random() * 3
         };
         this.location = {
-          x: 150,
-          y: 80,
+          x: 30,
+          y: 45,
         };
         this.radius = .5 + Math.random() * 1;
         this.life = 1 + Math.random() * 8;
