@@ -35,10 +35,10 @@ $(document).ready(function() {
         };
         this.location = {
           x: 30,
-          y: 45,
+          y: 30,
         };
         this.radius = .5 + Math.random() * 1;
-        this.life = 1 + Math.random() * 8;
+        this.life = 1 + Math.random() * 9;
         this.death = this.life;
         this.r = 255;
         this.g = Math.random() * 155;
