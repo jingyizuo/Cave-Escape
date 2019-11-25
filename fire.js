@@ -3,7 +3,7 @@ $(document).ready(function() {
     // Set canvas drawing surface
     var space = document.getElementById("surface");
     var surface = space.getContext("2d");
-    surface.scale(3,3);
+    surface.scale(4,3);
   //  surface.scale(1, 1);
     // Set Particles
     var particles = [];
@@ -16,8 +16,8 @@ $(document).ready(function() {
     var canvasWidth = 320;
     var canvasHeight = 480;
     $("#surface").css({
-        width: 800,
-        height: 1200
+        width: 500,
+        height: 1000
     });
 
 
