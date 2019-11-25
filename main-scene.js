@@ -99,18 +99,20 @@ class Assignment_One_Scene extends Scene_Component
 
         const shapes = { 'box': new Cube(),               // At the beginning of our program, load one of each of these shape
                        'strip': new Cube_Single_Strip(),  // definitions onto the GPU.  NOTE:  Only do this ONCE per shape
-                     'outline': new Cube_Outline() }      // design.  Once you've told the GPU what the design of a cube is,
+                     'outline': new Cube_Outline() ,
+                     planet_1: new (Subdivision_Sphere)(3)
+                    }      // design.  Once you've told the GPU what the design of a cube is,
         this.submit_shapes( context, shapes );            // it would be redundant to tell it again.  You should just re-use
                                                           // the one called "box" more than once in display() to draw
                                                           // multiple cubes.  Don't define more than one blueprint for the
                                                           // same thing here.
 
                                      // Make some Material objects available to you:
-        this.clay   = context.get_instance( Phong_Shader ).material( Color.of( .9,.5,.9, 1 ), { ambient: .4, diffusivity: .4 } );
+        this.clay   = context.get_instance( Phong_Shader ).material( Color.of( .9,.5,.9, 1 ), { ambient: 0.3, diffusivity: 0.8,specular:0.4 } );
         this.white  = context.get_instance( Basic_Shader ).material();
         this.plastic = this.clay.override({ specularity: .6 });
 
-        this.lights = [ new Light( Vec.of( 0,5,5,1 ), Color.of( 1, .4, 1, 1 ), 100000 ) ];
+        this.lights = [ new Light( Vec.of( 0,5,5,1 ), Color.of( 1, 0, 0, 1 ), 10000 ) ];
 
         this.materials =
           { sun_material:     context.get_instance( Phong_Shader ).material( Color.of( 0,0,1,1 ), { ambient:1 } ),
@@ -131,6 +133,7 @@ class Assignment_One_Scene extends Scene_Component
         this.set_outline_flag();
         this.set_colors();
         this.set_rotate();
+        
       }
     set_outline_flag(){
           this.outline_flag=!this.outline_flag;
@@ -184,36 +187,55 @@ class Assignment_One_Scene extends Scene_Component
       }
     display( graphics_state )
       { 
-        let light=new Light( Vec.of( 0,0,0,1 ), Color.of(0,0,0,1), 5 );
+        const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
+        var fire_pos=(Mat4.inverse(graphics_state.camera_transform)).times(Vec.of(0,0,0,1));
+        let light=new Light( fire_pos, Color.of(1,0.2,0,1), 5+Math.random()*3);
         this.lights.pop();
         this.lights.push(light);
+        //graphics_state.lights = this.lights;
         graphics_state.lights = this.lights;        // Use the lights stored in this.lights.
         const blue = Color.of( 0,0,1,1 ), yellow = Color.of( 1,1,0,1 );
+        
         let model_transform = Mat4.identity();
-        model_transform=Mat4.scale([10,8,0]).times(model_transform);
+        model_transform=Mat4.scale([10,8,0.1]).times(model_transform);
         model_transform=Mat4.translation([0,0,-10]).times(model_transform);
-        this.shapes.box.draw( graphics_state, model_transform, this.materials.p2_material);
+        this.shapes.box.draw( graphics_state, model_transform, this.plastic.override({ color: blue }));
+        
+        
+
         model_transform = Mat4.identity();
-        model_transform=Mat4.scale([0,8,10]).times(model_transform);
+        model_transform=Mat4.scale([0.1,8,10]).times(model_transform);
         model_transform=Mat4.translation([-10,0,0]).times(model_transform);
         this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: yellow }));
+        
         model_transform = Mat4.identity();
-        model_transform=Mat4.scale([0,8,10]).times(model_transform);
+        model_transform=Mat4.scale([0.1,8,10]).times(model_transform);
         model_transform=Mat4.translation([10,0,0]).times(model_transform);
         this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: yellow }));
+        
         model_transform = Mat4.identity();
-        model_transform=Mat4.scale([10,8,0]).times(model_transform);
+        model_transform=Mat4.scale([10,8,0.1]).times(model_transform);
         model_transform=Mat4.translation([0,0,10]).times(model_transform);
         this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: blue }));
+        
         model_transform = Mat4.identity();
-        model_transform=Mat4.scale([10,0,10]).times(model_transform);
+        model_transform=Mat4.scale([10,0.1,10]).times(model_transform);
         model_transform=Mat4.translation([0,-8,0]).times(model_transform);
         this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
-/*
+
         model_transform = Mat4.identity();
         model_transform=Mat4.scale([3,4,0.1]).times(model_transform);
         model_transform=Mat4.translation([0,-4,-9.9]).times(model_transform);
-        this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));*/
+        this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
+
+        model_transform = Mat4.scale([0.2,0.5,0.2]);
+        //model_transform = Mat4.translation([2,-3,2]).times(model_transform);
+        //model_transform=Mat4.inverse(graphics_state.camera_transform).times(model_transform);
+        //model_transform = Mat4.translation([2,-3,2]).times(model_transform);
+        //this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,0,1,1) }));
+        model_transform = Mat4.identity();
+        this.shapes.planet_1.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
+        
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
       }
   }

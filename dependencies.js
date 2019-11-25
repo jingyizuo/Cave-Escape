@@ -427,7 +427,9 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       context.globals.movement_controls_invert = this.will_invert = () => true;
       context.globals.has_controls = true;
       this.ang=0;
-      this.move=0;
+      this.wall=[5,-5,7,-7,5,-5];
+      this.camera=[1,-1,1,-1,1,-1];
+      this.move=true;
       [ this.radians_per_frame, this.meters_per_frame, this.speed_multiplier ] = [ 1/200, 20, 1 ];
       
       // *** Mouse controls: ***
@@ -495,7 +497,13 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
       this.live_string( box => box.textContent = "Position: " + this.pos[0].toFixed(2) + ", " + this.pos[1].toFixed(2) 
                                                        + ", " + this.pos[2].toFixed(2) );
                                                        this.new_line();
-      this.live_string( box => box.textContent = "angle: " + this.mouse.from_center );                                                 
+      this.live_string( box => box.textContent = "move: " + this.move );   
+      this.live_string( box => box.textContent = "angle: " + this.mouse.from_center );   
+      this.new_line();
+      this.live_string( box => box.textContent = "Camera_cube: " + this.camera[0].toFixed(2) + ", " + this.camera[1].toFixed(2) 
+                                                       + ", " + this.camera[2].toFixed(2)+ ", " + this.camera[3].toFixed(2)
+                                                       + ", " + this.camera[4].toFixed(2)+ ", " + this.camera[5].toFixed(2) );
+                                                       this.new_line();                                              
       this.new_line();        // The facing directions are actually affected by the left hand rule:
       this.live_string( box => box.textContent = "Facing: " + ( ( this.z_axis[0] > 0 ? "West " : "East ")
                    + ( this.z_axis[1] > 0 ? "Down " : "Up " ) + ( this.z_axis[2] > 0 ? "North" : "South" ) ) );
@@ -520,7 +528,7 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
           do_operation( Mat4.rotation( sign * velocity, Vec.of( i, 1-i, 0 ) ) );   // On X step, rotate around Y axis, and vice versa.
         }
       
-      
+        
       if( this.roll != 0){
         var eye=this.pos;
         var rx=this.roll[0];
@@ -541,14 +549,14 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
         
         //do_operation(s);
         this.ang-=angle2;
-        if(this.ang >= Math.PI/6) {
-          angle2=this.ang+angle2-Math.PI/6;
-          this.ang = Math.PI/6;
+        if(this.ang >= Math.PI/2) {
+          angle2=this.ang+angle2-Math.PI/2;
+          this.ang = Math.PI/2;
           //angle2=0;
         } 
-        else if(this.ang <= -Math.PI/6) {
-          angle2=this.ang+angle2+Math.PI/6;
-          this.ang = -Math.PI/6;
+        else if(this.ang <= -Math.PI/2) {
+          angle2=this.ang+angle2+Math.PI/2;
+          this.ang = -Math.PI/2;
           //angle2=0;
         }
         do_operation(Mat4.rotation(-angle2,Vec.of(1,0,0)));
@@ -560,10 +568,11 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
         //.times( Mat.of( x.to4(0), y.to4(0), z.to4(0), Vec.of( 0,0,0,1 ) ) ));
       } 
       
-      
-      
-                                                  // Now apply translation movement of the camera, in the newest local coordinate frame.
       do_operation( Mat4.translation( this.thrust.times( sign * meters_per_frame ) ) );
+        
+        
+      
+                                                  
     }
   third_person_arcball( radians_per_frame )
     { const sign = this.will_invert ? 1 : -1;
