@@ -42,18 +42,13 @@ Object.assign( defs,
     // ******************** End extra step
 
 
-    window.Assignment_Four_Scene = window.classes.Assignment_Four_Scene =
-class Assignment_Four_Scene extends Scene_Component
-
-
-
 // (Can define Main_Scene's class here)
 
-//const Main_Scene = Transforms_Sandbox;
-//const Additional_Scenes = [];
+const Main_Scene = Obj_File_Demo;
+const Additional_Scenes = [];
 
 //export { Main_Scene, Additional_Scenes, Canvas_Widget, Code_Widget, Text_Widget, defs }
-
+/*
 const Main_Scene = 
 class cave extends Scene{
   constructor()
@@ -62,12 +57,13 @@ class cave extends Scene{
     this.shapes =
      {
 
-      'key': new shape_From_File ("assets/key.obj"),
+      'key': new Shape_From_File ("assets/key.obj"),
 
     };
+    const phone_shader = new defs.Phone_Shader (2);
     this.materials =
           { 
-          phong: context.get_instance( Phong_Shader ).material( Color.of( 1,1,0,1 ) )
+          phong: new Material( Phong_Shader, {ambient: 1, diffusivity:1, color: Color.of( 1,1,0,1 ) )
           }
    
     display( graphics_state )
@@ -82,3 +78,5 @@ class cave extends Scene{
 
   }
 }
+
+ */
