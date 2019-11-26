@@ -14,16 +14,19 @@
 5. 开关 光源控制 位置变化
 6. 墙上字 开关变化直接显示
 
-Bug
-1.穿墙
-2.鼠标快速旋转
+已完成
+1. 鼠标移动视角改变
+2. 2d火焰模拟
+3. mouse picking／framebuffer
 
 处理
-1. bug
-2. 光／
-3. 光移动
-4. import
-5. 命中检测
+1. 鼠标晃动bug 
+2. import object
+3. 碰撞检测
+4. 机关
+5. texture
+6. 音效
+7. 火炬
 
 
 Our project is a first-person room escape game. The player will control a person locked in a room and try to find clues and props in order to get out. 

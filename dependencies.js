@@ -341,9 +341,8 @@ class Phong_Shader extends Shader          // THE DEFAULT SHADER: This uses the 
       return `
         uniform sampler2D texture;
         void main()
-        { 
-          if(uOffscreen) {
-            gl_FragColor = shapeColor;
+        { if(uOffscreen) {
+          gl_FragColor = shapeColor;
           	return;
           }
           if( GOURAUD || COLOR_NORMALS )    // Do smooth "Phong" shading unless options like "Gouraud mode" are wanted instead.
