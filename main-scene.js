@@ -90,7 +90,7 @@ window.Assignment_One_Scene = window.classes.Assignment_One_Scene =
 class Assignment_One_Scene extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
       { super(   context, control_box );    // First, include a secondary Scene that provides movement controls:
-        [ this.context,this.gl,this.framebuffer,this.pixels] = [ context,null,null,Vec.of(1,0,0,0) ];                  // Data members
+        [ this.context,this.gl,this.framebuffer,this.pixels,this.mousspicking] = [ context,null,null,Vec.of(1,0,0,0),null ];                  // Data members
         if( !context.globals.has_controls   )
           context.register_scene_component( new Movement_Controls( context, control_box.parentElement.insertCell() ) );
           var canvas = document.getElementsByTagName("canvas")[1];
@@ -132,6 +132,13 @@ class Assignment_One_Scene extends Scene_Component
             var colorPicked = new Uint8Array(4);
             this.gl.readPixels(width/2, height/2, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, colorPicked);
             this.pixels=colorPicked;
+
+            if(colorPicked[0]==255&&colorPicked[1]==0&&colorPicked[2]==0){
+              this.mousepicking="door";
+            }
+            else
+              this.mousepicking=null;
+
             // on-screen rendering
     	      this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
             //this.gl.uniform1i(program.uOffscreen, false);
@@ -214,6 +221,8 @@ class Assignment_One_Scene extends Scene_Component
         this.key_triggered_button( "Outline",       [ "o" ], this.set_outline_flag );
         this.key_triggered_button( "Sit still",     [ "m" ], this.set_rotate );
         this.live_string( box => box.textContent = this.pixels);
+        this.new_line();
+        this.live_string( box => box.textContent = this.mousepicking);
         this.new_line();
       }
     render(graphics_state, model_transform) {
@@ -303,7 +312,7 @@ class Assignment_One_Scene extends Scene_Component
         model_transform = Mat4.identity();
         model_transform=Mat4.scale([3,4,0.1]).times(model_transform);
         model_transform=Mat4.translation([0,-4,-9.9]).times(model_transform);
-        this.shapes.box.draw( graphics_state, model_transform,this.materials.sun_material);
+        this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,0,0,1) }));
 
         model_transform = Mat4.scale([0.2,0.5,0.2]);
         //model_transform = Mat4.translation([2,-3,2]).times(model_transform);
@@ -312,7 +321,6 @@ class Assignment_One_Scene extends Scene_Component
         //this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,0,1,1) }));
         model_transform = Mat4.identity();
         this.shapes.planet_1.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
-
         // TODO:  Draw your entire scene here.  Use this.draw_box( graphics_state, model_transform ) to call your helper.
       }
   }

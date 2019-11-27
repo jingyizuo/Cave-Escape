@@ -410,7 +410,7 @@ class Phong_Shader extends Shader          // THE DEFAULT SHADER: This uses the 
   update_flag(flg,gpu = this.g_addrs, gl = this.gl){
     gl.uniform1i(gpu.uOffscreen_loc, flg);
   }
-  
+
 }
 
 
@@ -557,14 +557,14 @@ class Movement_Controls extends Scene_Component    // Movement_Controls is a Sce
 
         //do_operation(s);
         this.ang-=angle2;
-        if(this.ang >= Math.PI/2) {
-          angle2=this.ang+angle2-Math.PI/2;
-          this.ang = Math.PI/2;
+        if(this.ang >= Math.PI/6) {
+          angle2=this.ang+angle2-Math.PI/6;
+          this.ang = Math.PI/6;
           //angle2=0;
         }
-        else if(this.ang <= -Math.PI/2) {
-          angle2=this.ang+angle2+Math.PI/2;
-          this.ang = -Math.PI/2;
+        else if(this.ang <= -Math.PI/6) {
+          angle2=this.ang+angle2+Math.PI/6;
+          this.ang = -Math.PI/6;
           //angle2=0;
         }
         do_operation(Mat4.rotation(-angle2,Vec.of(1,0,0)));
