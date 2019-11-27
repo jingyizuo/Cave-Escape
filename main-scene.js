@@ -309,11 +309,12 @@ class Assignment_One_Scene extends Scene_Component
         model_transform=Mat4.translation([0,-8,0]).times(model_transform);
         this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
 
-        model_transform = Mat4.identity();
+        model_transform= Mat4.identity();
         model_transform=Mat4.scale([3,4,0.1]).times(model_transform);
         model_transform=Mat4.translation([0,-4,-9.9]).times(model_transform);
-        if(this.mousepicking)
+        if(this.mousepicking){
           this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,0,1) }));
+        }
         else
           this.shapes.box.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,0,0,1) }));
 
