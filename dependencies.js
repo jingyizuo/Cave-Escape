@@ -410,6 +410,7 @@ class Phong_Shader extends Shader          // THE DEFAULT SHADER: This uses the 
   update_flag(flg,gpu = this.g_addrs, gl = this.gl){
     gl.uniform1i(gpu.uOffscreen_loc, flg);
   }
+  
 }
 
 
