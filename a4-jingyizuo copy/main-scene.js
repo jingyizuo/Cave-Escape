@@ -1,3 +1,4 @@
+
 window.Assignment_Four_Scene = window.classes.Assignment_Four_Scene =
 class Assignment_Four_Scene extends Scene_Component
   { constructor( context, control_box )     // The scene begins by requesting the camera, shapes, and materials it will need.
@@ -7,6 +8,8 @@ class Assignment_Four_Scene extends Scene_Component
           context.register_scene_component( new Movement_Controls( context, control_box.parentElement.insertCell() ) );
           var canvas = document.getElementsByTagName("canvas")[1];
           this.gl = context.canvas.getContext("webgl")||context.canvas.getContext("experimental-webgl");
+          this.gl.getExtension('OES_standard_derivatives');
+          this.gl.getExtension('OES_texture_float');
           var width = canvas.width;
           var height = canvas.height;
             //this.gl.enable(this.gl.CULL_FACE);
@@ -32,7 +35,7 @@ class Assignment_Four_Scene extends Scene_Component
            }
            document.addEventListener( "mousedown",   e => {
 
-            
+
     	      // off-screen rendering
     	      this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer);
             //this.gl.uniform1i(program.uOffscreen, true);
@@ -40,7 +43,7 @@ class Assignment_Four_Scene extends Scene_Component
             this.gl.clear(this.gl.COLOR_BUFFER_BIT |this.gl.DEPTH_BUFFER_BIT);
     	      this.display(context.globals.graphics_state);
 
-    	
+
             var colorPicked = new Uint8Array(4);
             this.gl.readPixels(width/2, height/2, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, colorPicked);
             this.pixels=colorPicked;
@@ -90,6 +93,9 @@ class Assignment_Four_Scene extends Scene_Component
         this.plastic = this.clay.override({ specularity: .6 });
 
         this.lights = [ new Light( Vec.of( 0,5,5,1 ), Color.of( 1, 0, 0, 1 ), 10000 ) ];
+        this.door=[];
+        this.door.push(context.get_instance("./assets/door.jpg"));
+        this.door.push(context.get_instance("./assets/doortext.jpg"));
         //this.door_shader=context.get_instance(Fake_Bump_Map).material(Color.of( 0,0,0,1 ), { ambient:1,texture: context.get_instance("./assets/doortext.jpg") })
         this.materials =
           { sun_material:     context.get_instance( Phong_Shader ).material( Color.of( 1,1,1,1 ), { ambient:1 } ),
@@ -98,7 +104,9 @@ class Assignment_Four_Scene extends Scene_Component
             p3_material:     context.get_instance( Phong_Shader ).material( Color.of( 0.9,0.5,0.39,1 ), { diffusivity: 1 ,specular: 1 } ),
             p4_material:     context.get_instance( Phong_Shader ).material( Color.of( 0.1,0.1,0.9,1 ), { specular: 0.8 } ),
             p5_material:     context.get_instance( Phong_Shader ).material( Color.of( 0.74,0.7,0.76,1 ), { diffusivity: 1 ,specular: 1 } ),
-            door:            context.get_instance( Phong_Shader ).material( Color.of( 0,0,0,1 ), { ambient:1,texture: context.get_instance("./assets/door.jpg") } )
+            door:            context.get_instance( Phong_Shader ).material( Color.of( 0,0,0,1 ), { ambient:1,texture: context.get_instance("./assets/door.jpg") } ),
+            doortext:        context.get_instance( Texture_Rotate ).material( Color.of( 0,0,0,1 ), { ambient:1,texture: context.get_instance("./assets/doortext.jpg") } )
+
                                 // TODO:  Fill in as many additional material objects as needed in this key/value table.
                                 //        (Requirement 1)
           }
@@ -152,10 +160,10 @@ class Assignment_Four_Scene extends Scene_Component
         model_transform=Mat4.scale([3,4,0.1]).times(model_transform);
         model_transform=Mat4.translation([0,-4,-9.9]).times(model_transform);
         if(this.mousepicking){
-          this.shapes.box.draw( graphics_state, model_transform,this.materials.door);
+          this.shapes.box.draw( graphics_state, model_transform,this.materials.doortext);
         }
         else
-          this.shapes.box.draw( graphics_state, model_transform, this.materials.door);
+          this.shapes.box.draw( graphics_state, model_transform, this.materials.doortext);
 
         model_transform = Mat4.scale([0.2,0.5,0.2]);
         //model_transform = Mat4.translation([2,-3,2]).times(model_transform);
@@ -166,50 +174,57 @@ class Assignment_Four_Scene extends Scene_Component
         this.shapes.planet_1.draw( graphics_state, model_transform,this.plastic.override({ color: Color.of(1,1,1,1) }));
       }
   }
-
-class Texture_Scroll_X extends Phong_Shader
-{ fragment_glsl_code()           // ********* FRAGMENT SHADER ********* 
-    {
-      // TODO:  Modify the shader below (right now it's just the same fragment shader as Phong_Shader) for requirement #6.
-      return `
-        uniform sampler2D texture;
-        void main()
-        { if( GOURAUD || COLOR_NORMALS )    // Do smooth "Phong" shading unless options like "Gouraud mode" are wanted instead.
-          { gl_FragColor = VERTEX_COLOR;    // Otherwise, we already have final colors to smear (interpolate) across vertices.            
-            return;
-          }                                 // If we get this far, calculate Smooth "Phong" Shading as opposed to Gouraud Shading.
-                                            // Phong shading is not to be confused with the Phong Reflection Model.
-          vec2 new_tex_coord=vec2(f_tex_coord.x+(mod(animation_time, 8.0)*2.0), f_tex_coord.y);
-
-          vec4 tex_color = texture2D( texture, new_tex_coord );                         // Sample the texture image in the correct place.
-                                                                                      // Compute an initial (ambient) color:
-          if( USE_TEXTURE ) gl_FragColor = vec4( ( tex_color.xyz + shapeColor.xyz ) * ambient, shapeColor.w * tex_color.w ); 
-          else gl_FragColor = vec4( shapeColor.xyz * ambient, shapeColor.w );
-          gl_FragColor.xyz += phong_model_lights( N );                     // Compute the final color with contributions from lights.
-        }`;
-    }
-}
-
+  // u_normMap,  texture
+  //v_texcoord  nVector.xy
 class Texture_Rotate extends Phong_Shader
-{ fragment_glsl_code()           // ********* FRAGMENT SHADER ********* 
+{
+
+  fragment_glsl_code()           // ********* FRAGMENT SHADER *********
     {
+
+
       // TODO:  Modify the shader below (right now it's just the same fragment shader as Phong_Shader) for requirement #7.
       return `
+        uniform sampler2D diff;
         uniform sampler2D texture;
+        #extension GL_OES_standard_derivatives : enable
         void main()
         { if( GOURAUD || COLOR_NORMALS )    // Do smooth "Phong" shading unless options like "Gouraud mode" are wanted instead.
-          { gl_FragColor = VERTEX_COLOR;    // Otherwise, we already have final colors to smear (interpolate) across vertices.            
+          { gl_FragColor = VERTEX_COLOR;    // Otherwise, we already have final colors to smear (interpolate) across vertices.
             return;
           }                                 // If we get this far, calculate Smooth "Phong" Shading as opposed to Gouraud Shading.
                                             // Phong shading is not to be confused with the Phong Reflection Model.
-          float angle=6.28 * mod(animation_time/4.0, 1.0);
-          mat2 rotate=mat2(cos(angle),sin(angle),-sin(angle),cos(angle));
-          
-          vec4 tex_color = texture2D( texture, rotate*(f_tex_coord-0.5)+0.5 );                         // Sample the texture image in the correct place.
+          mat4 mMatrix = mat4(cos(mod(1.571*animation_time,120.)),sin(mod(1.571*animation_time,120.)),0.,0.,-sin(mod(1.571*animation_time,120.)),cos(mod(1.571*animation_time,120.)),0.,0.,0.,0.,1.,0.,0.,0.,0.,1.);
+          vec2 mVector = f_tex_coord;
+          vec4 nVector = vec4(mVector,0.,0.);
+
+          vec2 dSTdx = dFdx( f_tex_coord );
+          vec2 dSTdy = dFdy( f_tex_coord  );
+          float Hll = texture2D( texture,nVector.xy).x;
+          float dBx = texture2D( texture,nVector.xy + dSTdx ).x - Hll;
+          float dBy = texture2D( texture, nVector.xy+ dSTdy ).x - Hll;
+          vec2 dHdxy_fwd=vec2( dBx, dBy );
+          vec3 surf_norm=N;
+
+          vec3 vSigmaX = vec3( dFdx( -surf_pos.x ), dFdx( -surf_pos.y ), dFdx( -surf_pos.z ) );
+          vec3 vSigmaY = vec3( dFdy( -surf_pos.x ), dFdy( -surf_pos.y ), dFdy( -surf_pos.z ) );
+          vec3 vN = surf_norm;
+          vec3 R1 = cross( vSigmaY, vN );
+          vec3 R2 = cross( vN, vSigmaX );
+          float fDet = dot( vSigmaX, R1 );
+          fDet *= ( float( gl_FrontFacing ) * 2.0 - 1.0 );
+          vec3 vGrad = sign( fDet ) * ( dHdxy_fwd.x * R1 + dHdxy_fwd.y * R2 );
+
+          vec3 normal1=normalize( abs( fDet ) * surf_norm - vGrad );
+          vec4 tex_color = texture2D( diff, nVector.xy );                         // Sample the texture image in the correct place.
                                                                                       // Compute an initial (ambient) color:
-          if( USE_TEXTURE ) gl_FragColor = vec4( ( tex_color.xyz + shapeColor.xyz ) * ambient, shapeColor.w * tex_color.w ); 
+          if( USE_TEXTURE ) {
+            gl_FragColor = vec4( ( tex_color.xyz + shapeColor.xyz ) * ambient, shapeColor.w * tex_color.w );
+            gl_FragColor.xyz += phong_model_lights( normal1+vec3(0.5,0.5,0.5));
+
+          }
           else gl_FragColor = vec4( shapeColor.xyz * ambient, shapeColor.w );
-          gl_FragColor.xyz += phong_model_lights( N );                     // Compute the final color with contributions from lights.
+          gl_FragColor.xyz += phong_model_lights( normal1+vec3(0.5,0.5,0.5));                     // Compute the final color with contributions from lights.
         }`;
     }
 }
