@@ -194,19 +194,7 @@ class Assignment_One_Scene extends Scene_Component
         this.set_rotate();
 
       }
-    set_outline_flag(){
-          this.outline_flag=!this.outline_flag;
-    }
-    set_colors() {
-          // TODO:  Create a class member variable to store your cube's colors.
-          for( let i=0;i<=7;i++ )
-          {
-            this.rgba[i]=Color.of(Math.random(),Math.random(),Math.random(),1);
-          }
-      }
-    set_rotate(){
-          this.rotate_flag=!this.rotate_flag;
-    }
+    
 
     make_control_panel()             // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
       {
