@@ -996,6 +996,7 @@ class Webgl_Manager
       if( !this.context ) throw "Canvas failed to make a WebGL context.";
       const gl = this.context;
       this.set_size( dimensions );
+      this.pixels=vec4(0,0,0,0);
       this.off=false;
                
       gl.clearColor.apply( gl, background_color );           // Tell the GPU which color to clear the canvas with each frame.
@@ -1056,6 +1057,7 @@ class Webgl_Manager
             //alert(height);
             gll.readPixels(width/2, height/2, 1, 1, gll.RGBA, gll.UNSIGNED_BYTE, colorPicked);
             //alert(colorPicked);
+            this.pixels=colorPicked;
 
             
 
@@ -1103,7 +1105,7 @@ class Webgl_Manager
       while( open_list.length )                           // Traverse all Scenes and their children, recursively.
       { open_list.push( ...open_list[0].children );
                                                                 // Call display() to draw each registered animation:
-        open_list.shift().display( this, this.program_state,this.off );
+        open_list.shift().display( this, this.program_state,this.off,this.pixels );
       }
                                               // Now that this frame is drawn, request that render() happen 
                                               // again as soon as all other web page events are processed:

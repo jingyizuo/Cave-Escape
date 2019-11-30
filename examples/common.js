@@ -889,7 +889,7 @@ class Movement_Controls extends Scene
           this.matrix().post_multiply( Mat4.rotation( -velocity,   i, 1-i, 0 ) );
           this.inverse().pre_multiply( Mat4.rotation( +velocity,   i, 1-i, 0 ) );
         }
-      if(this.r!=0){
+      if(this.r[0]!=0 && this.r[1]!=0){
         var eye=this.pos;
         var rx=this.r[0];
         var ry=this.r[1];
@@ -926,6 +926,8 @@ class Movement_Controls extends Scene
 
         this.matrix().post_multiply( Mat4.rotation( -this.ang,   1,0,0 ) );
         this.inverse().pre_multiply( Mat4.rotation( +this.ang,   1,0,0 ) );
+        this.r[0]=0;
+        this.r[1]=0;
 
       }
       //this.matrix().post_multiply( Mat4.rotation( -.1 * this.roll,   0,0,1 ) );
@@ -952,7 +954,7 @@ class Movement_Controls extends Scene
       this. matrix().post_multiply( Mat4.translation( 0,0, +25 ) );
       this.inverse().pre_multiply(  Mat4.translation( 0,0, -25 ) );
     }
-  display( context, graphics_state,off, dt = graphics_state.animation_delta_time / 1000 )
+  display( context, graphics_state,off,pix, dt = graphics_state.animation_delta_time / 1000 )
     {                                                            // The whole process of acting upon controls begins here.
       const m = this.speed_multiplier * this. meters_per_frame,
             r = this.speed_multiplier * this.radians_per_frame;

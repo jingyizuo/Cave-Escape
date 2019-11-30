@@ -24,6 +24,7 @@ export class Transforms_Sandbox_Base extends Scene
                                                         // Don't define more than one blueprint for the same thing here.
       this.gl=null;
       this.off=null;
+      this.mousepicking=null;
       this.framebuffer=null;
       this.pixels=vec4(1,0,0,0);
       this.shapes = { 'box'  : new Cube(),
@@ -84,34 +85,51 @@ export class Transforms_Sandbox_Base extends Scene
   make_control_panel()
     {                                 // make_control_panel(): Sets up a panel of interactive HTML elements, including
                                       // buttons with key bindings for affecting this scene, and live info readouts.
-      this.control_panel.innerHTML += "Dragonfly rotation angle: <br>";
-                                                // The next line adds a live text readout of a data member of our Scene.
-      this.live_string( box => { box.textContent = ( this.hover ? 0 : ( this.t % (2*Math.PI)).toFixed(2) ) + " radians" } ); 
-      this.new_line();
-                                                // Add buttons so the user can actively toggle data members of our Scene:
-      this.key_triggered_button( "Hover dragonfly in place", [ "h" ], function() { this.hover ^= 1; } );
-      this.new_line();
-      this.key_triggered_button( "Swarm mode", [ "m" ], function() { this.swarm ^= 1; } );
       this.live_string( box => box.textContent = this.pixels);
       this.new_line();
+      this.live_string( box => box.textContent = this.mousepicking);
+      this.new_line();
     }
-  
+  check(pixels){
+    var r=pixels[0];
+    var g=pixels[1];
+    var b=pixels[2];
+    switch(b) {
+      case 1:
+        this.mousepicking="torch1";
+        break;
+      case 2:
+        this.mousepicking="torch2";
+        break;
+      case 3:
+        this.mousepicking="torch3";
+        break;
+      case 4:
+        this.mousepicking="torch4";
+        break;
+      case 5:
+        this.mousepicking="door_left";
+        break;
+      case 6:
+        this.mousepicking="door_right";
+        break;
+      default:
+        this.mousepicking=null;
+        // code block
+    }
+  }
   show_explanation( document_section)
     {
    
     } 
-  display( context, program_state, off)
+  display( context, program_state, off,pixels)
     {                                                // display():  Called once per frame of animation.  We'll isolate out
                                                      // the code that actually draws things into Transforms_Sandbox, a
                                                      // subclass of this Scene.  Here, the base class's display only does
                                                      // some initial setup.
  
                            // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
-    var canvas = document.getElementsByTagName("canvas")[1];
-     this.gl = context.canvas.getContext("webgl")||context.canvas.getContext("experimental-webgl");
-     var width = canvas.width;
-     var height = canvas.height;
-     //alert(width);
+      this.pixels=pixels;
       if( !context.scratchpad.controls ) 
         { this.children.push( context.scratchpad.controls = new defs.Movement_Controls() ); 
 
@@ -132,6 +150,7 @@ export class Transforms_Sandbox_Base extends Scene
       const angle = Math.sin( t );
       const light_position = Mat4.rotation( angle,   1,0,0 ).times( vec4( 0,-1,1,0 ) );
       program_state.lights = [ new Light( light_position, color( 1,1,1,1 ), 1000000 ) ];
+      this.check(this.pixels);
     }
 }
 
@@ -144,7 +163,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                                      // the shapes.  We isolate that code so it can be experimented with on its own.
                                                      // This gives you a very small code sandbox for editing a simple scene, and for
                                                      // experimenting with matrix transformations.
-  display( context, program_state,off )
+  display( context, program_state,off,pixels )
     {                                                // display():  Called once per frame of animation.  For each shape that you want to
                                                      // appear onscreen, place a .draw() call for it inside.  Each time, pass in a
                                                      // different matrix value to control where the shape appears.
@@ -160,7 +179,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                                      // context:  Wraps the WebGL rendering context shown onscreen.  Pass to draw().                                                       
 
                                                 // Call the setup code that we left inside the base class:
-      super.display( context, program_state ,off);
+      super.display( context, program_state ,off,pixels);
 
       /**********************************
       Start coding down here!!!!
@@ -175,53 +194,80 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                     // Variable model_transform will be a local matrix value that helps us position shapes.
                                     // It starts over as the identity every single frame - coordinate axes at the origin.
       let model_transform = Mat4.identity();
+      
+      //cube
       if(off)
         this.shapes.box.draw(context, program_state, model_transform,this.offscreen);
       else                                            
         this.shapes.box.draw(context, program_state, model_transform,this.materials.plastic.override( color(1,1,1,1) ));
 
-
+      //torch1
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
-      model_transform=Mat4.scale(10,10,10).times(model_transform);
+      model_transform=Mat4.scale(10,11,10).times(model_transform);
       model_transform=Mat4.translation(5,-7,50).times(model_transform);
-      this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
-
+      if(off){
+        this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,1/255,1)));
+      }
+      else 
+        this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
+      //torch2
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
-       model_transform=Mat4.scale(10,10,10).times(model_transform);
+       model_transform=Mat4.scale(10,11,10).times(model_transform);
       model_transform=Mat4.translation(28,-7,90).times(model_transform);
-      this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
-
+      if(off){
+        this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,2/255,1)));
+      }
+      else 
+        this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
+      //torch3
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
-       model_transform=Mat4.scale(10,10,10).times(model_transform);
+       model_transform=Mat4.scale(10,11,10).times(model_transform);
       model_transform=Mat4.translation(27,-7,130).times(model_transform);
-      this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
-
+      if(off){
+        this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,3/255,1)));
+      }
+      else 
+        this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
+      //torch4
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
-       model_transform=Mat4.scale(10,10,10).times(model_transform);
+       model_transform=Mat4.scale(10,11,10).times(model_transform);
       model_transform=Mat4.translation(5.7,-7,180).times(model_transform);
-      this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
+      if(off){
+        this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,4/255,1)));
+      }
+      else 
+        this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
 
-
+      //cave
       model_transform= Mat4.identity();
       model_transform=Mat4.scale(20,20,20).times(model_transform);
       model_transform=Mat4.translation(40,0,70).times(model_transform);
       this.shapes.cave.draw(context, program_state, model_transform,this.bumps);
 
+      //left door
       model_transform= Mat4.identity();
       model_transform=Mat4.scale(20,20,20).times(model_transform);
       model_transform=Mat4.translation(40,0,70).times(model_transform);
-      this.shapes.door_left.draw(context, program_state, model_transform,this.bumps);
-
+      if(off){
+        this.shapes.door_left.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,5/255,1)));
+      }
+      else
+        this.shapes.door_left.draw(context, program_state, model_transform,this.bumps);
+      //right door
       model_transform= Mat4.identity();
       model_transform=Mat4.scale(20,20,20).times(model_transform);
       model_transform=Mat4.translation(40,0,70).times(model_transform);
-      this.shapes.door_right.draw(context, program_state, model_transform,this.bumps);
+      if(off){
+        this.shapes.door_right.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,6/255,1)));
+      }
+      else
+        this.shapes.door_right.draw(context, program_state, model_transform,this.bumps);
 
-      
+      //door plane
       model_transform= Mat4.identity();
       model_transform=Mat4.scale(20,20,20).times(model_transform);
       model_transform=Mat4.translation(-30,0,208).times(model_transform);
