@@ -17,13 +17,12 @@
 
 
 ## 进度
-1. mousepicking (1/2 只能读当前颜色)
-2. 游戏逻辑 枪 射击 钥匙 开门
-3. texture装饰
-4. 移动光／点光（scren to texture）
-5. 碰撞检测／防止穿模
-6. 音效
-7. 鼠标晃动bug 
+1. 游戏逻辑 枪 射击 钥匙 开门
+2. texture装饰
+3. 移动光／点光（scren to texture）
+4. 碰撞检测／防止穿模
+5. 音效
+6. 鼠标晃动bug 
 
 
 Our project is a first-person room escape game. The player will control a person locked in a room and try to find clues and props in order to get out. 
