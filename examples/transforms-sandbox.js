@@ -2,7 +2,7 @@ import {tiny, defs} from './common.js';
 
                                                   // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene } = tiny;
-const { Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere, Shape_From_File } = defs;
+const { Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere, Shape_From_File,Scene_To_Texture_Demo } = defs;
 
 
 export class Transforms_Sandbox_Base extends Scene
@@ -33,8 +33,20 @@ export class Transforms_Sandbox_Base extends Scene
                       'door_left' : new Shape_From_File("../assets/door_left.obj"),
                       'door_right' : new Shape_From_File("../assets/door_right.obj"),
                       'door_plane' : new Shape_From_File("../assets/doorplane.obj"),
+                      'box_1':   new defs.Cube(),
+                      'box_2': new defs.Cube(),
+                      'plane': new defs.Square(),
                       
                     };
+
+            this.scratchpad = document.getElementById("surface");
+                                    // A hidden canvas for re-sizing the real canvas to be square:
+        this.scratchpad_context = this.scratchpad.getContext('2d');
+        this.scratchpad.width   = 256;
+        this.scratchpad.height  = 256;                // Initial image source: Blank gif file:
+        this.texture = new Texture( "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" );
+
+      
       this.shapes.cave.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
       this.shapes.torch.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
       this.shapes.door_left.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
@@ -47,12 +59,16 @@ export class Transforms_Sandbox_Base extends Scene
                                                   // Here we use a Phong shader and the Material stores the scalar 
                                                   // coefficients that appear in the Phong lighting formulas so that the
                                                   // appearance of particular materials can be tweaked via these numbers.
+      const bump = new defs.Fake_Bump_Map();
       const phong = new defs.Phong_Shader();
       const off_shader=new defs.Offscreen_Shader();
       this.materials = { plastic: new Material( phong,
                                     { ambient: .3, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) } ),
                           metal: new Material( phong, 
-                                    { ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) } ) };
+                                    { ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) } ) ,
+                          a: new Material( bump, { ambient: 1}),
+                         c: new Material( bump, { ambient:  1, texture: this.texture }),
+                                    };
           
                                                            // Bump mapped:
       this.bumps = new Material( new defs.Fake_Bump_Map( 1 ), { color: color( .5,.5,.5,1 ), 
@@ -62,54 +78,7 @@ export class Transforms_Sandbox_Base extends Scene
 
 
 
-      
-       
-
-      /* this.gl = context.canvas.getContext("webgl")||context.canvas.getContext("experimental-webgl");
-      var width = canvas.width;
-      var height = canvas.height;
-      var texre = this.gl.createTexture();
-      this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-            //this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-      this.gl.texImage2D(this.gl.TEXTURE_2D, 0,this.gl.RGB, width, height, 0,this.gl.RGB,this.gl.UNSIGNED_BYTE, null);
-      this.gl.generateMipmap(this.gl.TEXTURE_2D);
-      var renderbuffer = this.gl.createRenderbuffer();
-      this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, renderbuffer);
-      this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT16, width, height);
-      this.framebuffer = this.gl.createFramebuffer();
-      this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer);
-      this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, texture, 0);
-      this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT, this.gl.RENDERBUFFER, renderbuffer);
-      var status=this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
-      if (status !== this.gl.FRAMEBUFFER_COMPLETE) {
-         alert(status);
-      }*/
-      /*document.addEventListener( "mousedown",   e => {
-
-            
-    	      // off-screen rendering
-    	    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer);
-            //this.gl.uniform1i(program.uOffscreen, true);
-            //context.get_instance( Phong_Shader ).update_flag(true);
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT |this.gl.DEPTH_BUFFER_BIT);
-    	    this.display(context, context.globals.graphics_state);
-
-    	
-            var colorPicked = new Uint8Array(4);
-            this.gl.readPixels(width/2, height/2, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, colorPicked);
-            this.pixels=colorPicked;
-
-            
-
-            // on-screen rendering
-    	    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-            //this.gl.uniform1i(program.uOffscreen, false);
-            //context.get_instance( Phong_Shader ).update_flag(false);
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT |this.gl.DEPTH_BUFFER_BIT);
-            this.display(context,context.globals.graphics_state);
-
-
-           } );*/
+  
 
     }
   make_control_panel()
@@ -257,6 +226,35 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       model_transform=Mat4.scale(20,20,20).times(model_transform);
       model_transform=Mat4.translation(-30,0,208).times(model_transform);
       this.shapes.door_plane.draw(context, program_state, model_transform,this.bumps);
+
+
+      
+        this.texture.image.src = this.scratchpad.toDataURL("image/png");
+
+                                    // Don't call copy to GPU until the event loop has had a chance
+                                    // to act on our SRC setting once:
+        if( this.skipped_first_frame )
+                                                     // Update the texture with the current scene:
+            this.texture.copy_onto_graphics_card( context.context, false );
+        this.skipped_first_frame = true;
+
+                                    // Start over on a new drawing, never displaying the prior one:
+        this.cube_2 = Mat4.translation( 44,12,-8 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/4,0,1,0)).times(Mat4.scale(3,10,1));
+  //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
+        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+       
+        this.cube_2 = Mat4.translation( 67,12,32 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
+  //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
+        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+
+         this.cube_2 = Mat4.translation( 66,12,72 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
+  //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
+        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+
+
+         this.cube_2 = Mat4.translation( 46,12,122).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
+  //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
+        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
 
                               // Note that our coordinate system stored in model_transform still has non-uniform scaling
                               // due to our scale() call.  This could have undesired effects for subsequent transforms;

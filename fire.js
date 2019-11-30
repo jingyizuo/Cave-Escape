@@ -13,7 +13,7 @@ $(document).ready(function() {
     }
     var time = 0;
     // Set wrapper and canvas items size
-    var canvasWidth = 320;
+    var canvasWidth = 480;
     var canvasHeight = 480;
     $("#surface").css({
         width: 500,
@@ -35,7 +35,7 @@ $(document).ready(function() {
         };
         this.location = {
           x: 30,
-          y: 30,
+          y: 80,
         };
         this.radius = .5 + Math.random() * 1;
         this.life = 1 + Math.random() * 9;
