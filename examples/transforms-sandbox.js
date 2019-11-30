@@ -329,22 +329,29 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                     // Start over on a new drawing, never displaying the prior one:
         this.cube_2 = Mat4.translation( 44,12,-8 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/4,0,1,0)).times(Mat4.scale(3,10,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
-        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+        if(this.light_num[0]==1){
+          this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+        }
+        
        
         this.cube_2 = Mat4.translation( 67,12,32 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
+      if(this.light_num[1]==1){
         this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+      }
 
          this.cube_2 = Mat4.translation( 66,12,72 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
+      if(this.light_num[2]==1){
         this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
-
+      }
 
          this.cube_2 = Mat4.translation( 46,12,122).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
+       if(this.light_num[3]==1){
         this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
-
-                              // Note that our coordinate system stored in model_transform still has non-uniform scaling
+       }
+                        // Note that our coordinate system stored in model_transform still has non-uniform scaling
                               // due to our scale() call.  This could have undesired effects for subsequent transforms;
                               // rotations will behave like shears.  To avoid this it may have been better to do the
                               // scale() last and then immediately unscale after the draw.  Or better yet, don't store
