@@ -1047,6 +1047,7 @@ class Webgl_Manager
             //this.context.get_instance( Shader ).update_flag(true);
             gll.clear(gll.COLOR_BUFFER_BIT |gll.DEPTH_BUFFER_BIT);
             this.off=true;
+            //alert(this.off);
     	    //display(context.globals.graphics_state);
             this.render();
     	    
@@ -1054,7 +1055,7 @@ class Webgl_Manager
             //alert(width);
             //alert(height);
             gll.readPixels(width/2, height/2, 1, 1, gll.RGBA, gll.UNSIGNED_BYTE, colorPicked);
-            alert(colorPicked);
+            //alert(colorPicked);
 
             
 
@@ -1064,6 +1065,7 @@ class Webgl_Manager
             //context.get_instance( Phong_Shader ).update_flag(false);
             gll.clear(gll.COLOR_BUFFER_BIT |gll.DEPTH_BUFFER_BIT);
             this.off=false;
+            //alert(this.off);
             this.render();
             //this.display(context.globals.graphics_state);
 

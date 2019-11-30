@@ -649,7 +649,25 @@ class Phong_Shader extends Shader
     }
     
 }
+const Offscreen_Shader = defs.Offscreen_Shader =
+class Offscreen_Shader extends Phong_Shader
+{                       // **Textured_Phong** is a Phong Shader extended to addditionally decal a
+                        // texture image over the drawn shape, lined up according to the texture
+                        // coordinates that are stored at each shape vertex.
+  fragment_glsl_code()         // ********* FRAGMENT SHADER ********* 
+    {                          // A fragment is a pixel that's overlapped by the current triangle.
+                               // Fragments affect the final image or get discarded due to depth.                                
+      return this.shared_glsl_code() + `
+        varying vec2 f_tex_coord;
+        uniform sampler2D texture;
 
+        void main()
+          {                                                          // Sample the texture image in the correct place:
+                                                                     // Compute an initial (ambient) color:
+            gl_FragColor = shape_color;
+          } ` ;
+    }
+}
 
 const Textured_Phong = defs.Textured_Phong =
 class Textured_Phong extends Phong_Shader

@@ -48,6 +48,7 @@ export class Transforms_Sandbox_Base extends Scene
                                                   // coefficients that appear in the Phong lighting formulas so that the
                                                   // appearance of particular materials can be tweaked via these numbers.
       const phong = new defs.Phong_Shader();
+      const off_shader=new defs.Offscreen_Shader();
       this.materials = { plastic: new Material( phong,
                                     { ambient: .3, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) } ),
                           metal: new Material( phong, 
@@ -56,8 +57,8 @@ export class Transforms_Sandbox_Base extends Scene
                                                            // Bump mapped:
       this.bumps = new Material( new defs.Fake_Bump_Map( 1 ), { color: color( .5,.5,.5,1 ), 
           ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/cave.png" ) });
-      this.offscreen=new Material( phong,
-        { ambient: 1, color: color( 1,1,1,1 ) } );
+      this.offscreen=new Material( off_shader,
+        { ambient: 1, color: color( 0,1,1,1 ) } );
 
 
 
@@ -137,7 +138,7 @@ export class Transforms_Sandbox_Base extends Scene
                                                      // some initial setup.
  
                            // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
-      var canvas = document.getElementsByTagName("canvas")[1];
+    var canvas = document.getElementsByTagName("canvas")[1];
      this.gl = context.canvas.getContext("webgl")||context.canvas.getContext("experimental-webgl");
      var width = canvas.width;
      var height = canvas.height;
