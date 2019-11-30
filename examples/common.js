@@ -934,7 +934,7 @@ class Movement_Controls extends Scene
       this. matrix().post_multiply( Mat4.translation( 0,0, +25 ) );
       this.inverse().pre_multiply(  Mat4.translation( 0,0, -25 ) );
     }
-  display( context, graphics_state, dt = graphics_state.animation_delta_time / 1000 )
+  display( context, graphics_state,off, dt = graphics_state.animation_delta_time / 1000 )
     {                                                            // The whole process of acting upon controls begins here.
       const m = this.speed_multiplier * this. meters_per_frame,
             r = this.speed_multiplier * this.radians_per_frame;

@@ -996,6 +996,7 @@ class Webgl_Manager
       if( !this.context ) throw "Canvas failed to make a WebGL context.";
       const gl = this.context;
       this.set_size( dimensions );
+      this.off=false;
                
       gl.clearColor.apply( gl, background_color );           // Tell the GPU which color to clear the canvas with each frame.
       gl.getExtension( "OES_element_index_uint" );           // Load an extension to allow shapes with more than 65535 vertices.
@@ -1012,59 +1013,66 @@ class Webgl_Manager
            w.requestAnimationFrame    || w.webkitRequestAnimationFrame
         || w.mozRequestAnimationFrame || w.oRequestAnimationFrame || w.msRequestAnimationFrame
         || function( callback, element ) { w.setTimeout(callback, 1000/60);  } )( window );
-
-      var texture = gl.createTexture();
-      var width = window.innerWidth/2;
-      var height = window.innerHeight/2;
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D, 0,gl.RGB, width, height, 0,gl.RGB,gl.UNSIGNED_BYTE, null);
-      gl.generateMipmap(gl.TEXTURE_2D);
+      var c=document.getElementsByTagName("canvas")[1];
+      var gll=this.canvas.getContext("webgl")||this.canvas.getContext("experimental-webgl");
+      //alert(this.canvas);
+      var texture = gll.createTexture();
+      var width = c.width;
+      var height = c.height;
+      gll.bindTexture(gll.TEXTURE_2D, texture);
+      gll.texImage2D(gll.TEXTURE_2D, 0,gll.RGB, width, height, 0,gll.RGB,gll.UNSIGNED_BYTE, null);
+      gll.generateMipmap(gll.TEXTURE_2D);
       var renderbuffer = gl.createRenderbuffer();
-      gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
-      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
-      this.framebuffer = gl.createFramebuffer();
-      gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+      gll.bindRenderbuffer(gll.RENDERBUFFER, renderbuffer);
+      gll.renderbufferStorage(gll.RENDERBUFFER, gll.DEPTH_COMPONENT16, width, height);
+      this.framebuffer = gll.createFramebuffer();
+      gll.bindFramebuffer(gll.FRAMEBUFFER, this.framebuffer);
+      gll.framebufferTexture2D(gll.FRAMEBUFFER, gll.COLOR_ATTACHMENT0, gll.TEXTURE_2D, texture, 0);
+      gll.framebufferRenderbuffer(gll.FRAMEBUFFER, gll.DEPTH_ATTACHMENT, gll.RENDERBUFFER, renderbuffer);
       //var program=this.gl.createProgram();
 
-      var status=gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-      if (status !== gl.FRAMEBUFFER_COMPLETE) {
+      var status=gll.checkFramebufferStatus(gll.FRAMEBUFFER);
+      if (status !== gll.FRAMEBUFFER_COMPLETE) {
           alert(status);
       }
-      gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+      
 
 
       document.addEventListener( "mousedown",   e => {
 
             
     	      // off-screen rendering
-    	    gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+            gll.bindFramebuffer(gll.FRAMEBUFFER, this.framebuffer);
             //this.gl.uniform1i(program.uOffscreen, true);
             //this.context.get_instance( Shader ).update_flag(true);
-            gl.clear(gl.COLOR_BUFFER_BIT |gl.DEPTH_BUFFER_BIT);
+            gll.clear(gll.COLOR_BUFFER_BIT |gll.DEPTH_BUFFER_BIT);
+            this.off=true;
     	    //display(context.globals.graphics_state);
             this.render();
     	    
             var colorPicked = new Uint8Array(4);
-            gl.readPixels(width/2, height/2, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, colorPicked);
-            //alert(colorPicked);
+            //alert(width);
+            //alert(height);
+            gll.readPixels(width/2, height/2, 1, 1, gll.RGBA, gll.UNSIGNED_BYTE, colorPicked);
+            alert(colorPicked);
 
             
 
             // on-screen rendering
-    	    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+            gll.bindFramebuffer(gll.FRAMEBUFFER, null);
             //this.gl.uniform1i(program.uOffscreen, false);
             //context.get_instance( Phong_Shader ).update_flag(false);
-            gl.clear(gl.COLOR_BUFFER_BIT |gl.DEPTH_BUFFER_BIT);
+            gll.clear(gll.COLOR_BUFFER_BIT |gll.DEPTH_BUFFER_BIT);
+            this.off=false;
             this.render();
             //this.display(context.globals.graphics_state);
 
 
            } );
-      gl.bindTexture(gl.TEXTURE_2D, null);
-      gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+           gll.bindFramebuffer(gll.FRAMEBUFFER, this.framebuffer);
+           gll.bindTexture(gll.TEXTURE_2D, null);
+           gll.bindRenderbuffer(gll.RENDERBUFFER, null);
+           gll.bindFramebuffer(gll.FRAMEBUFFER, null);
 
     }
   set_size( dimensions = [ window.innerWidth, window.innerHeight ] )
@@ -1093,7 +1101,7 @@ class Webgl_Manager
       while( open_list.length )                           // Traverse all Scenes and their children, recursively.
       { open_list.push( ...open_list[0].children );
                                                                 // Call display() to draw each registered animation:
-        open_list.shift().display( this, this.program_state );
+        open_list.shift().display( this, this.program_state,this.off );
       }
                                               // Now that this frame is drawn, request that render() happen 
                                               // again as soon as all other web page events are processed:

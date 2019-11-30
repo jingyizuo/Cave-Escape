@@ -23,6 +23,7 @@ export class Transforms_Sandbox_Base extends Scene
                                                         // one called "box" more than once in display() to draw multiple cubes.
                                                         // Don't define more than one blueprint for the same thing here.
       this.gl=null;
+      this.off=null;
       this.framebuffer=null;
       this.pixels=vec4(1,0,0,0);
       this.shapes = { 'box'  : new Cube(),
@@ -48,15 +49,15 @@ export class Transforms_Sandbox_Base extends Scene
                                                   // appearance of particular materials can be tweaked via these numbers.
       const phong = new defs.Phong_Shader();
       this.materials = { plastic: new Material( phong,
-                                    { ambient: .2, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) } ),
+                                    { ambient: .3, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) } ),
                           metal: new Material( phong, 
                                     { ambient: .2, diffusivity: 1, specularity:  1, color: color( .9,.5,.9,1 ) } ) };
-      this.stars = new Material( new defs.Textured_Phong( 1 ),  { color: color( .5,.5,.5,1 ), 
-          ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/stars.png" ) });
           
                                                            // Bump mapped:
       this.bumps = new Material( new defs.Fake_Bump_Map( 1 ), { color: color( .5,.5,.5,1 ), 
           ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/cave.png" ) });
+      this.offscreen=new Material( phong,
+        { ambient: 1, color: color( 1,1,1,1 ) } );
 
 
 
@@ -129,7 +130,7 @@ export class Transforms_Sandbox_Base extends Scene
     {
    
     } 
-  display( context, program_state, target = document)
+  display( context, program_state, off)
     {                                                // display():  Called once per frame of animation.  We'll isolate out
                                                      // the code that actually draws things into Transforms_Sandbox, a
                                                      // subclass of this Scene.  Here, the base class's display only does
@@ -173,7 +174,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                                      // the shapes.  We isolate that code so it can be experimented with on its own.
                                                      // This gives you a very small code sandbox for editing a simple scene, and for
                                                      // experimenting with matrix transformations.
-  display( context, program_state )
+  display( context, program_state,off )
     {                                                // display():  Called once per frame of animation.  For each shape that you want to
                                                      // appear onscreen, place a .draw() call for it inside.  Each time, pass in a
                                                      // different matrix value to control where the shape appears.
@@ -189,7 +190,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                                      // context:  Wraps the WebGL rendering context shown onscreen.  Pass to draw().                                                       
 
                                                 // Call the setup code that we left inside the base class:
-      super.display( context, program_state );
+      super.display( context, program_state ,off);
 
       /**********************************
       Start coding down here!!!!
@@ -204,8 +205,10 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                     // Variable model_transform will be a local matrix value that helps us position shapes.
                                     // It starts over as the identity every single frame - coordinate axes at the origin.
       let model_transform = Mat4.identity();
-                                                  
-      this.shapes.box.draw(context, program_state, model_transform,this.materials.plastic.override( color(1,1,1,1) ));
+      if(off)
+        this.shapes.box.draw(context, program_state, model_transform,this.offscreen);
+      else                                            
+        this.shapes.box.draw(context, program_state, model_transform,this.materials.plastic.override( color(1,1,1,1) ));
 
 
       model_transform= Mat4.identity();
