@@ -172,7 +172,7 @@ export class Transforms_Sandbox_Base extends Scene
                             .plus(this.light_pos[2]).plus(this.light_pos[3])).times(1/this.num);
       const light_position2=program_state.camera_transform.times( vec4( 0,-1+0.1*Math.random(),1,0 ) );
       if(this.light){
-        program_state.lights = [ new Light( program_state.camera_transform.times( vec4( 0,-1+0.2*Math.random(),1,0 ) ), color( 1,0.1+0.1*Math.random(),0,1 ), 100000*this.num+50000*Math.random() ),
+        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( 0,1+0.1*Math.random(),1,0 ) ),color(1,0.1+0.1*Math.random(),0,1),10),
         new Light(light_position2,color(1,0.1+0.1*Math.random(),0,1),10)]
       }
       else
@@ -350,7 +350,11 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[3]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
-
+        model_transform=Mat4.translation(25,-25,-40);
+        if(off)
+          this.shapes.box.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,7/255,1)));
+        else                                            
+          this.shapes.box.draw(context, program_state, model_transform,this.offscreen);
                               // Note that our coordinate system stored in model_transform still has non-uniform scaling
 
                               // due to our scale() call.  This could have undesired effects for subsequent transforms;
