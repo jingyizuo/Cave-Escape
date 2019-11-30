@@ -26,6 +26,9 @@ export class Transforms_Sandbox_Base extends Scene
       this.off=null;
       this.mousepicking=null;
       this.framebuffer=null;
+      this.light=false;
+      this.light_num=[0,0,0,0];
+      this.light_pos=[vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1)];
       this.pixels=vec4(1,0,0,0);
       this.shapes = { 'box'  : new Cube(),
                       'ball' : new Subdivision_Sphere( 4 ),
@@ -37,6 +40,7 @@ export class Transforms_Sandbox_Base extends Scene
                       'box_1':   new defs.Cube(),
                       'box_2': new defs.Cube(),
                       'plane': new defs.Square(),
+                      'keybox': new Shape_From_File("../assets/m1911.obj")
                       
                     };
 
@@ -73,7 +77,7 @@ export class Transforms_Sandbox_Base extends Scene
           
                                                            // Bump mapped:
       this.bumps = new Material( new defs.Fake_Bump_Map( 1 ), { color: color( .5,.5,.5,1 ), 
-          ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/cave.png" ) });
+          ambient: .1, diffusivity: .5, specularity: .5, texture: new Texture( "assets/cave.png" ) });
       this.offscreen=new Material( off_shader,
         { ambient: 1, color: color( 0,1,1,1 ) } );
 
@@ -97,15 +101,27 @@ export class Transforms_Sandbox_Base extends Scene
     switch(b) {
       case 1:
         this.mousepicking="torch1";
+        this.light=true;
+        this.light_num[0]=1;
+        this.light_pos[0]=vec4( 44,3,-8,1);
         break;
       case 2:
         this.mousepicking="torch2";
+        this.light=true;
+        this.light_num[1]=1;
+        this.light_pos[1]=vec4(69,5,34,1);
         break;
       case 3:
         this.mousepicking="torch3";
+        this.light=true;
+        this.light_num[2]=1;
+        this.light_pos[2]=vec4(63,4,76,1);
         break;
       case 4:
         this.mousepicking="torch4";
+        this.light=true;
+        this.light_num[2]=1;
+        this.light_pos[2]=vec4(46,4,122,1);
         break;
       case 5:
         this.mousepicking="door_left";
@@ -115,7 +131,10 @@ export class Transforms_Sandbox_Base extends Scene
         break;
       default:
         this.mousepicking=null;
-        // code block
+    }
+    //light
+    if(b<=4 && b>=0 && this.first_light==null){
+
     }
   }
   show_explanation( document_section)
@@ -148,8 +167,14 @@ export class Transforms_Sandbox_Base extends Scene
                                                 // the shader when coloring shapes.  See Light's class definition for inputs.
       const t = this.t = program_state.animation_time/1000;
       const angle = Math.sin( t );
-      const light_position = Mat4.rotation( angle,   1,0,0 ).times( vec4( 0,-1,1,0 ) );
-      program_state.lights = [ new Light( light_position, color( 1,1,1,1 ), 1000000 ) ];
+      this.num=this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3];
+      const light_position = (this.light_pos[0].plus(this.light_pos[1])
+                            .plus(this.light_pos[2]).plus(this.light_pos[3])).times(1/this.num);
+      if(this.light){
+        program_state.lights = [ new Light( light_position, color( 1,0.1+0.1*Math.random(),0,1 ), 100000*this.num+50000*Math.random() ) ];
+      }
+      else
+        program_state.lights = [ new Light( light_position, color( 1,0.2,0,1 ), 1000000 ) ];
       this.check(this.pixels);
     }
 }
@@ -194,12 +219,29 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                     // Variable model_transform will be a local matrix value that helps us position shapes.
                                     // It starts over as the identity every single frame - coordinate axes at the origin.
       let model_transform = Mat4.identity();
-      
+      switch(this.num){
+        case 0:
+          this.bumps=this.bumps.override({ambient: .1});
+          break;
+        case 1:
+          this.bumps=this.bumps.override({ambient: 0.11});
+          break;
+        case 2:
+          this.bumps=this.bumps.override({ambient: 0.11});
+          break;
+        case 3:
+          this.bumps=this.bumps.override({ambient: 0.12});
+          break;
+        case 4:
+          this.bumps=this.bumps.override({ambient: 0.13});
+          break;
+      }
       //cube
       if(off)
         this.shapes.box.draw(context, program_state, model_transform,this.offscreen);
       else                                            
         this.shapes.box.draw(context, program_state, model_transform,this.materials.plastic.override( color(1,1,1,1) ));
+
 
       //torch1
       model_transform= Mat4.identity();
