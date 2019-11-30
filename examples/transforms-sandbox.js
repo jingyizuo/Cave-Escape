@@ -64,9 +64,9 @@ export class Transforms_Sandbox_Base extends Scene
                                                   // Here we use a Phong shader and the Material stores the scalar 
                                                   // coefficients that appear in the Phong lighting formulas so that the
                                                   // appearance of particular materials can be tweaked via these numbers.
-      const bump = new defs.Fake_Bump_Map();
-      const phong = new defs.Phong_Shader();
-      const off_shader=new defs.Offscreen_Shader();
+      const bump = new defs.Fake_Bump_Map(2);
+      const phong = new defs.Phong_Shader(2);
+      const off_shader=new defs.Offscreen_Shader(2);
       this.materials = { plastic: new Material( phong,
                                     { ambient: .3, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) } ),
                           metal: new Material( phong, 
@@ -76,8 +76,8 @@ export class Transforms_Sandbox_Base extends Scene
                                     };
           
                                                            // Bump mapped:
-      this.bumps = new Material( new defs.Fake_Bump_Map( 1 ), { color: color( .5,.5,.5,1 ), 
-          ambient: .1, diffusivity: .5, specularity: .5, texture: new Texture( "assets/cave.png" ) });
+      this.bumps = new Material( new defs.Fake_Bump_Map( ), { color: color( .5,.5,.5,1 ), 
+          ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/cave.png" ) });
       this.offscreen=new Material( off_shader,
         { ambient: 1, color: color( 0,1,1,1 ) } );
 
@@ -120,8 +120,8 @@ export class Transforms_Sandbox_Base extends Scene
       case 4:
         this.mousepicking="torch4";
         this.light=true;
-        this.light_num[2]=1;
-        this.light_pos[2]=vec4(46,4,122,1);
+        this.light_num[3]=1;
+        this.light_pos[3]=vec4(46,4,122,1);
         break;
       case 5:
         this.mousepicking="door_left";
@@ -170,11 +170,13 @@ export class Transforms_Sandbox_Base extends Scene
       this.num=this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3];
       const light_position = (this.light_pos[0].plus(this.light_pos[1])
                             .plus(this.light_pos[2]).plus(this.light_pos[3])).times(1/this.num);
+      const light_position2=program_state.camera_transform.times( vec4( 0,-1+0.1*Math.random(),1,0 ) );
       if(this.light){
-        program_state.lights = [ new Light( light_position, color( 1,0.1+0.1*Math.random(),0,1 ), 100000*this.num+50000*Math.random() ) ];
+        program_state.lights = [ new Light( program_state.camera_transform.times( vec4( 0,-1+0.2*Math.random(),1,0 ) ), color( 1,0.1+0.1*Math.random(),0,1 ), 100000*this.num+50000*Math.random() ),
+        new Light(light_position2,color(1,0.1+0.1*Math.random(),0,1),10)]
       }
       else
-        program_state.lights = [ new Light( light_position, color( 1,0.2,0,1 ), 1000000 ) ];
+        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( 0,-1,1,0 ) ),color(1,1,1,1),10) ];
       this.check(this.pixels);
     }
 }
@@ -329,20 +331,24 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                     // Start over on a new drawing, never displaying the prior one:
         this.cube_2 = Mat4.translation( 44,12,-8 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/4,0,1,0)).times(Mat4.scale(3,10,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
-        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+        if(this.light_num[0]==1)
+          this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
        
         this.cube_2 = Mat4.translation( 67,12,32 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
-        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+        if(this.light_num[1]==1)
+          this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
 
          this.cube_2 = Mat4.translation( 66,12,72 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
-        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+        if(this.light_num[2]==1)
+          this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
 
 
          this.cube_2 = Mat4.translation( 46,12,122).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
-        this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+        if(this.light_num[3]==1)
+          this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
 
                               // Note that our coordinate system stored in model_transform still has non-uniform scaling
                               // due to our scale() call.  This could have undesired effects for subsequent transforms;
