@@ -190,7 +190,7 @@ export class Transforms_Sandbox_Base extends Scene
                     // treated when projecting 3D points onto a plane.  The Mat4 functions perspective() and
                     // orthographic() automatically generate valid matrices for one.  The input arguments of
                     // perspective() are field of view, aspect ratio, and distances to the near plane and far plane.
-          program_state.set_camera( Mat4.translation( 0,0,0 ) );
+          program_state.set_camera( Mat4.translation( -42,3,-85 ) );
         }
 
       program_state.projection_transform = Mat4.perspective( Math.PI/4, context.width/context.height, 1, 10000 );
@@ -271,7 +271,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           break;
       }
       //gun
-      model_transform=Mat4.translation(30,-29,50).times(Mat4.scale(0.3,0.3,0.3)).times(Mat4.rotation(Math.PI/2,0,0,1));  
+      model_transform=Mat4.translation(28,-17.7,8).times(Mat4.scale(0.3,0.3,0.3)).times(Mat4.rotation(Math.PI/2,0,0,1));  
       if(this.light){
         if(!this.gun && this.shoot==false){
           if(off){
@@ -291,7 +291,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         
       }  
       //keybox                                   
-      model_transform=Mat4.translation(25,-25,-40).times(Mat4.scale(3,3,3));
+      model_transform=Mat4.translation(50,-14,78).times(Mat4.scale(3,3,3));
       if(this.box){
         if(off)
           this.shapes.box_unopened.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,7/255,1)));
@@ -299,7 +299,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           this.shapes.box_unopened.draw(context, program_state, model_transform,this.wood.override(color(0.75,0.5,0.3,1)));
       }
       else{
-        model_transform=model_transform.times(Mat4.rotation(-Math.PI/2,0,1,0));
+        model_transform=model_transform.times(Mat4.rotation(Math.PI/2,0,1,0));
         this.shapes.box_bottom.draw(context, program_state, model_transform,this.wood.override(color(0.75,0.5,0.3,1)));
         //this.shapes.box_lid.draw(context, program_state, model_transform,this.wood.override(color(0.75,0.5,0.3,1)));
         //this.shapes.box_side.draw(context, program_state, model_transform,this.wood.override(color(0.75,0.5,0.3,1)));
@@ -325,7 +325,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
       model_transform=Mat4.scale(10,11,10).times(model_transform);
-      model_transform=Mat4.translation(5,-7,50).times(model_transform);
+      model_transform=Mat4.translation(40,-7,30).times(model_transform);
       if(off){
         this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,1/255,1)));
       }
@@ -335,7 +335,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
        model_transform=Mat4.scale(10,11,10).times(model_transform);
-      model_transform=Mat4.translation(28,-7,90).times(model_transform);
+      model_transform=Mat4.translation(17,-7,60).times(model_transform);
       if(off){
         this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,2/255,1)));
       }
@@ -345,7 +345,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
        model_transform=Mat4.scale(10,11,10).times(model_transform);
-      model_transform=Mat4.translation(27,-7,130).times(model_transform);
+      model_transform=Mat4.translation(14,-7,90).times(model_transform);
       if(off){
         this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,3/255,1)));
       }
@@ -355,7 +355,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
        model_transform=Mat4.scale(10,11,10).times(model_transform);
-      model_transform=Mat4.translation(5.7,-7,180).times(model_transform);
+      model_transform=Mat4.translation(14.5,-7,120).times(model_transform);
       if(off){
         this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,4/255,1)));
       }
@@ -376,9 +376,9 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         if(this.mousepicking=="door_left" && this.is_key==true){
            
         model_transform= Mat4.identity();
-        model_transform=Mat4.scale(20,20,20).times(model_transform);
-        model_transform=Mat4.rotation(0.5,0,1,0).times(model_transform);
-        model_transform=Mat4.translation(-4.5,0,70).times(model_transform);
+        model_transform=Mat4.scale(17,20,20).times(model_transform);
+        model_transform=Mat4.rotation(0.3+5*Math.PI/6,0,1,0).times(model_transform);
+        model_transform=Mat4.translation(70,10.5,5).times(model_transform);
            if(off){
             this.shapes.door_left.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,6/255,1)));
           }
@@ -387,8 +387,9 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         }
         else{
           model_transform= Mat4.identity();
-          model_transform=Mat4.scale(20,20,20).times(model_transform);
-          model_transform=Mat4.translation(40,0,70).times(model_transform);
+          model_transform = Mat4.rotation(5*Math.PI/6,0,1,0).times(model_transform);
+          model_transform=Mat4.scale(18,20,20).times(model_transform);
+          model_transform=Mat4.translation(50,10.5,-9.5).times(model_transform);
           if(off){
            this.shapes.door_left.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,5/255,1)));
           }
@@ -399,9 +400,9 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         //right door
         if(this.mousepicking=="door_right" && this.is_key==true){
            model_transform= Mat4.identity();
-           model_transform=Mat4.scale(20,20,20).times(model_transform);
-           model_transform=Mat4.rotation(-0.5,0,1,0).times(model_transform);
-           model_transform=Mat4.translation(68,0,102).times(model_transform);
+           model_transform=Mat4.rotation(-0.3+5*Math.PI/6,0,1,0).times(model_transform);
+           model_transform=Mat4.scale(17,20,20).times(model_transform);
+           model_transform=Mat4.translation(48,10.5,-33.5).times(model_transform);
            if(off){
             this.shapes.door_right.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,6/255,1)));
           }
@@ -410,8 +411,9 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         }
         else{
           model_transform= Mat4.identity();
-          model_transform=Mat4.scale(20,20,20).times(model_transform);
-          model_transform=Mat4.translation(40,0,70).times(model_transform);
+          model_transform = Mat4.rotation(5*Math.PI/6,0,1,0).times(model_transform);
+          model_transform=Mat4.scale(18,20,20).times(model_transform);
+          model_transform=Mat4.translation(50,10.5,-9.5).times(model_transform);
           if(off){
             this.shapes.door_right.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,6/255,1)));
           }
@@ -422,9 +424,14 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
        
   
         //door plane
+      
         model_transform= Mat4.identity();
+        model_transform = Mat4.rotation(5*Math.PI/6,0,1,0).times(model_transform);
         model_transform=Mat4.scale(18,20,20).times(model_transform);
-        model_transform=Mat4.translation(-23,0,207).times(model_transform);
+        model_transform=Mat4.translation(165,11,-96).times(model_transform);
+
+         
+      
         this.shapes.door_plane.draw(context, program_state, model_transform,this.bumps);
 
 
@@ -439,24 +446,24 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         this.skipped_first_frame = true;
 
                                     // Start over on a new drawing, never displaying the prior one:
-        this.cube_2 = Mat4.translation( 44,12,-8 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/4,0,1,0)).times(Mat4.scale(3,10,1));
+        this.cube_2 = Mat4.translation( 82,9,-28 ).times(Mat4.rotation(0.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
 
         if(this.light_num[0]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
        
-        this.cube_2 = Mat4.translation( 67,12,32 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
+        this.cube_2 = Mat4.translation( 59.5,9,2.2 ).times(Mat4.rotation(0.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[1]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
 
-         this.cube_2 = Mat4.translation( 66,12,72 ).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
+         this.cube_2 = Mat4.translation( 56.5,9,32 ).times(Mat4.rotation(.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[2]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
 
 
-         this.cube_2 = Mat4.translation( 46,12,122).times(Mat4.rotation(Math.PI/7-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/3.5,0,1,0)).times(Mat4.scale(3,10,1));
+         this.cube_2 = Mat4.translation( 57.5,9,61.5).times(Mat4.rotation(.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[3]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
