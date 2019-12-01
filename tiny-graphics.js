@@ -1059,7 +1059,9 @@ class Webgl_Manager
             //alert(colorPicked);
             this.pixels=colorPicked;
           if(colorPicked[2]==1||colorPicked[2]==2||colorPicked[2]==3||colorPicked[2]==4){
-                 document.getElementById('fire_audio').src ="https://www.youtube.com/embed/HwXhXu9pizk?&autoplay=1&loop=1&playlist=HwXhXu9pizk";
+            
+           
+                 document.getElementById('fire_audio').src ="https://www.youtube.com/embed/mz9ftphTWTM?&autoplay=1&loop=1&playlist=mz9ftphTWTM";
               }
           
             
