@@ -36,11 +36,11 @@ export class Transforms_Sandbox_Base extends Scene
                       'torch' : new Shape_From_File("../assets/wall_torch.obj"),
                       'door_left' : new Shape_From_File("../assets/door_left.obj"),
                       'door_right' : new Shape_From_File("../assets/door_right.obj"),
-                      'door_plane' : new Shape_From_File("../assets/doorplane.obj"),
-                      'box_1':   new defs.Cube(),
-                      'box_2': new defs.Cube(),
+                      'door_plane' : new Shape_From_File("../assets/doorplane.obj"),                      
+                      'gun':   new Shape_From_File("../assets/Pistol_obj.obj"),
                       'plane': new defs.Square(),
-                      'keybox': new Shape_From_File("../assets/m1911.obj")
+                      'gun_black': new Shape_From_File("../assets/gunblack.obj"),
+                      'gun_silver': new Shape_From_File("../assets/gunsliver.obj")
                       
                     };
 
@@ -129,6 +129,15 @@ export class Transforms_Sandbox_Base extends Scene
       case 6:
         this.mousepicking="door_right";
         break;
+      case 7:
+        this.mousepicking="keybox";
+        break;
+      case 8:
+        this.mousepicking="key";
+        break;
+      case 9:
+        this.mousepicking="gun";
+        break;
       default:
         this.mousepicking=null;
     }
@@ -161,7 +170,7 @@ export class Transforms_Sandbox_Base extends Scene
           program_state.set_camera( Mat4.translation( 0,0,0 ) );
         }
 
-      program_state.projection_transform = Mat4.perspective( Math.PI/4, context.width/context.height, 1, 100 );
+      program_state.projection_transform = Mat4.perspective( Math.PI/4, context.width/context.height, 1, 10000 );
       
                                                 // *** Lights: *** Values of vector or point lights.  They'll be consulted by 
                                                 // the shader when coloring shapes.  See Light's class definition for inputs.
@@ -170,9 +179,9 @@ export class Transforms_Sandbox_Base extends Scene
       this.num=this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3];
       const light_position = (this.light_pos[0].plus(this.light_pos[1])
                             .plus(this.light_pos[2]).plus(this.light_pos[3])).times(1/this.num);
-      const light_position2=program_state.camera_transform.times( vec4( 0,-1+0.1*Math.random(),1,0 ) );
+      const light_position2=program_state.camera_transform.times( vec4( 0.1,-1+0.1*Math.random(),1,0 ) );
       if(this.light){
-        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( 0,1+0.1*Math.random(),1,0 ) ),color(1,0.1+0.1*Math.random(),0,1),10),
+        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( -0.1,1+0.1*Math.random(),1,0 ) ),color(1,0.1+0.1*Math.random(),0,1),10),
         new Light(light_position2,color(1,0.1+0.1*Math.random(),0,1),10)]
       }
       else
@@ -239,10 +248,18 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           break;
       }
       //cube
-      if(off)
-        this.shapes.box.draw(context, program_state, model_transform,this.offscreen);
-      else                                            
-        this.shapes.box.draw(context, program_state, model_transform,this.materials.plastic.override( color(1,1,1,1) ));
+      model_transform=Mat4.translation(30,-29,50).times(Mat4.scale(0.3,0.3,0.3)).times(Mat4.rotation(Math.PI/2,0,0,1));  
+      if(this.light){
+        if(off){
+          this.shapes.gun_black.draw(context, program_state, model_transform,this.materials.plastic.override( color(0,0,9/255,1) ));
+          this.shapes.gun_silver.draw(context, program_state, model_transform,this.materials.plastic.override( color(0,0,9/255,1) ));
+        }
+        else{
+          this.shapes.gun_black.draw(context, program_state, model_transform,this.materials.plastic.override( color(.1,.1,.1,1) ));
+          this.shapes.gun_silver.draw(context, program_state, model_transform,this.materials.metal.override( color(.75,.75,.75,1) ));
+        }
+      }                                     
+      
 
 
       //torch1
@@ -293,29 +310,59 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       this.shapes.cave.draw(context, program_state, model_transform,this.bumps);
 
       //left door
-      model_transform= Mat4.identity();
-      model_transform=Mat4.scale(20,20,20).times(model_transform);
-      model_transform=Mat4.translation(40,0,70).times(model_transform);
-      if(off){
-        this.shapes.door_left.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,5/255,1)));
-      }
-      else
-        this.shapes.door_left.draw(context, program_state, model_transform,this.bumps);
-      //right door
-      model_transform= Mat4.identity();
-      model_transform=Mat4.scale(20,20,20).times(model_transform);
-      model_transform=Mat4.translation(40,0,70).times(model_transform);
-      if(off){
-        this.shapes.door_right.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,6/255,1)));
-      }
-      else
-        this.shapes.door_right.draw(context, program_state, model_transform,this.bumps);
-
-      //door plane
-      model_transform= Mat4.identity();
-      model_transform=Mat4.scale(20,20,20).times(model_transform);
-      model_transform=Mat4.translation(-30,0,208).times(model_transform);
-      this.shapes.door_plane.draw(context, program_state, model_transform,this.bumps);
+      if(this.mousepicking!="door_left"){
+        model_transform= Mat4.identity();
+        model_transform=Mat4.scale(20,20,20).times(model_transform);
+        model_transform=Mat4.translation(40,0,70).times(model_transform);
+          if(off){
+           this.shapes.door_left.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,5/255,1)));
+          }
+          else
+           this.shapes.door_left.draw(context, program_state, model_transform,this.bumps);
+        }
+        if(this.mousepicking=="door_left"){
+           
+        model_transform= Mat4.identity();
+        model_transform=Mat4.scale(20,20,20).times(model_transform);
+        model_transform=Mat4.rotation(0.5,0,1,0).times(model_transform);
+        model_transform=Mat4.translation(-4.5,0,70).times(model_transform);
+           if(off){
+            this.shapes.door_left.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,6/255,1)));
+          }
+          else
+            this.shapes.door_left.draw(context, program_state, model_transform,this.bumps);
+        }
+  
+        //right door
+        if(this.mousepicking!="door_right"){
+          model_transform= Mat4.identity();
+          model_transform=Mat4.scale(20,20,20).times(model_transform);
+          model_transform=Mat4.translation(40,0,70).times(model_transform);
+          if(off){
+            this.shapes.door_right.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,6/255,1)));
+          }
+          else
+            this.shapes.door_right.draw(context, program_state, model_transform,this.bumps);
+        }
+        if(this.mousepicking=="door_right"){
+           model_transform= Mat4.identity();
+           model_transform=Mat4.scale(20,20,20).times(model_transform);
+           model_transform=Mat4.rotation(-0.5,0,1,0).times(model_transform);
+           model_transform=Mat4.translation(68,0,102).times(model_transform);
+           if(off){
+            this.shapes.door_right.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,6/255,1)));
+          }
+          else
+            this.shapes.door_right.draw(context, program_state, model_transform,this.bumps);
+        }
+  
+       
+  
+        //door plane
+        model_transform= Mat4.identity();
+        model_transform=Mat4.scale(18,20,20).times(model_transform);
+        model_transform=Mat4.translation(-23,0,207).times(model_transform);
+        this.shapes.door_plane.draw(context, program_state, model_transform,this.bumps);
 
 
       
@@ -350,11 +397,14 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[3]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
-        model_transform=Mat4.translation(25,-25,-40);
-        if(off)
-          this.shapes.box.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,7/255,1)));
-        else                                            
-          this.shapes.box.draw(context, program_state, model_transform,this.offscreen);
+        model_transform=Mat4.translation(25,-25,-40).times(Mat4.scale(3,3,3));
+        if(this.light){
+          if(off)
+            this.shapes.box.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,7/255,1)));
+          else                                            
+            this.shapes.box.draw(context, program_state, model_transform,this.offscreen);
+        }
+        
                               // Note that our coordinate system stored in model_transform still has non-uniform scaling
 
                               // due to our scale() call.  This could have undesired effects for subsequent transforms;
