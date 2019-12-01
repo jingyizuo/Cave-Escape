@@ -3,6 +3,7 @@
 <!DOCTYPE html> <html> <head> <meta charset="UTF-8"/> <link rel="icon" href="assets/fav.ico">
 <script src='https://wow.techbrood.com/libs/jquery/jquery-1.11.1.min.js'></script>
 <script src="fire.js"></script>
+<script src="gun.mp3"></script>
 <script src="examples/transforms-sandbox.js"></script>
 <style>
     * { font-family: monospace }
@@ -49,13 +50,14 @@
 <title>Cave Escape</title>
 <iframe id="background_audio" style="display:none" width="560" height="315" src="https://www.youtube.com/embed/c-FvPutl77A?&autoplay=1&loop=1&playlist=c-FvPutl77A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <iframe id="fire_audio" style="display:none" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<iframe id="gun_audio" style="display:none" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<audio id="gun_audio" src="" autoplay="false" ></audio>
+<!--iframe id="gun_audio" style="display:none" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe-->
 
 </head>
 <body>       <!-- Begin typing your web page here. //-->
 
       <!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls. //-->
-<div id="main-canvas" class="canvas-widget">
+<div id="main-canvas" class="canvas-widget" onclick="playSound();">
   <canvas id="surface"></canvas>
 </div>
 
@@ -69,6 +71,44 @@
 
 </script>
 <script>
+       var first_fire=false;
+       var last_fire=false;
+       var gun_hold=false;
+       var key=false;
+        function playSound() {
+          
+          if(gun_hold==true){
+            if(last_fire==true){
+             gun_hold=false;
+             last_fire=false;
+            }
+            if(first_fire==true){
+            gun_hold=true;
+            first_fire=false;
+            }
+            var audio = new Audio('gun.mp3');
+            audio.play();
+
+          } 
+          else{
+            if(last_fire==true){
+             gun_hold=false;
+             last_fire=false;
+            }
+            if(first_fire==true){
+              first_fire=false;
+              gun_hold=true;
+            }
+          }
+          if(key==true){
+            first_fire=false;
+            last_fire=false;
+            gun_hold=false;
+            return;
+          }
+          
+      }
+      
   function getAngle(A, B) {
       if(B[0] === 0 && A[0] === 0) {
         return 0;

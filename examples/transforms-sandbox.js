@@ -34,9 +34,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.is_key=false;
       this.light_pos=[vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1)];
       this.pixels=vec4(1,0,0,0);
-      this.shapes = { 'box'  : new Cube(),
-                      'ball' : new Subdivision_Sphere( 4 ),
-                      'cave' : new Shape_From_File("../assets/cave.obj"),
+      this.shapes = {
                       'cave1' : new Shape_From_File("../assets/cave/cave1.obj"),
                       'cave2' : new Shape_From_File("../assets/cave/cave2.obj"),
                       'cave3' : new Shape_From_File("../assets/cave/cave3.obj"),
@@ -52,7 +50,6 @@ export class Transforms_Sandbox_Base extends Scene
                       'gun_silver': new Shape_From_File("../assets/gunsliver.obj"),
                       'box_bottom': new Shape_From_File("../assets/box_open.obj"),
                       'box_unopened': new Shape_From_File("../assets/box_unopen.obj"),
-                      'box_side': new Shape_From_File("../assets/box/box_side.obj"),
                       'key': new Shape_From_File("../assets/key.obj")
                       
                     };
@@ -65,7 +62,11 @@ export class Transforms_Sandbox_Base extends Scene
         this.texture = new Texture( "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" );
 
       
-      this.shapes.cave.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
+      this.shapes.cave1.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
+      this.shapes.cave2.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
+      this.shapes.cave3.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
+      this.shapes.cave4.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
+      this.shapes.cave5.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
       this.shapes.torch.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
       this.shapes.door_left.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
       this.shapes.door_right.arrays.texture_coord.forEach( p => p.scale_by( 10 ) );
@@ -109,6 +110,14 @@ export class Transforms_Sandbox_Base extends Scene
       this.new_line();
       this.live_string( box => box.textContent = this.mousepicking);
       this.new_line();
+      this.live_string( box => box.textContent = this.shoot);
+      this.new_line();
+      this.live_string( box => box.textContent = "first: " + first_fire );
+      this.new_line();
+      this.live_string( box => box.textContent = "gun: " + gun_hold );
+      this.new_line();
+      this.live_string( box => box.textContent = "last: " + last_fire );
+      this.new_line();
     }
   check(pixels){
     var r=pixels[0];
@@ -119,25 +128,21 @@ export class Transforms_Sandbox_Base extends Scene
         this.mousepicking="torch1";
         this.light=true;
         this.light_num[0]=1;
-        this.light_pos[0]=vec4( 44,3,-8,1);
         break;
       case 2:
         this.mousepicking="torch2";
         this.light=true;
         this.light_num[1]=1;
-        this.light_pos[1]=vec4(69,5,34,1);
         break;
       case 3:
         this.mousepicking="torch3";
         this.light=true;
         this.light_num[2]=1;
-        this.light_pos[2]=vec4(63,4,76,1);
         break;
       case 4:
         this.mousepicking="torch4";
         this.light=true;
         this.light_num[3]=1;
-        this.light_pos[3]=vec4(46,4,122,1);
         break;
       case 5:
         this.mousepicking="door_left";
@@ -148,6 +153,8 @@ export class Transforms_Sandbox_Base extends Scene
       case 7:
         this.mousepicking="keybox";
         if(this.gun){
+          last_fire=true;
+          key=true;
           this.shoot=true;
           this.gun=false;
           this.box=false;
@@ -160,6 +167,7 @@ export class Transforms_Sandbox_Base extends Scene
       case 9:
         this.mousepicking="gun";
         this.gun=true;
+        first_fire=true;
         break;
       default:
         this.mousepicking=null;
@@ -200,15 +208,11 @@ export class Transforms_Sandbox_Base extends Scene
       const t = this.t = program_state.animation_time/1000;
       const angle = Math.sin( t );
       this.num=this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3];
-      const light_position = (this.light_pos[0].plus(this.light_pos[1])
-                            .plus(this.light_pos[2]).plus(this.light_pos[3])).times(1/this.num);
-      const light_position2=program_state.camera_transform.times( vec4( 0.1,-1+0.1*Math.random(),1,0 ) );
-      if(this.light){
-        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( -0.1,1+0.1*Math.random(),1,0 ) ),color(1,0.1+0.1*Math.random(),0,1),10),
-        new Light(light_position2,color(1,0.1+0.1*Math.random(),0,1),10)]
+      if(this.num!=0){
+        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( -0.1,1+0.1*Math.random(),1,0 ) ),color(1,0.2+0.1*Math.random(),0,1),3*this.num)]
       }
       else
-        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( 0,-1,1,0 ) ),color(1,1,1,1),10) ];
+        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( 0,-1,1,0 ) ),color(1,1,1,1),.3)];
       this.check(this.pixels);
     }
 }
@@ -255,19 +259,19 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       let model_transform = Mat4.identity();
       switch(this.num){
         case 0:
-          this.bumps=this.bumps.override({ambient: .1});
+          this.bumps=this.bumps.override({ambient: .02});
           break;
         case 1:
-          this.bumps=this.bumps.override({ambient: 0.11});
+          this.bumps=this.bumps.override({ambient: 0.06});
           break;
         case 2:
-          this.bumps=this.bumps.override({ambient: 0.11});
+          this.bumps=this.bumps.override({ambient: 0.08});
           break;
         case 3:
-          this.bumps=this.bumps.override({ambient: 0.12});
+          this.bumps=this.bumps.override({ambient: 0.10});
           break;
         case 4:
-          this.bumps=this.bumps.override({ambient: 0.13});
+          this.bumps=this.bumps.override({ambient: 0.11});
           break;
       }
       //gun
@@ -320,7 +324,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       }
       
 
-
+/*
       //torch1
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
@@ -330,7 +334,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,1/255,1)));
       }
       else 
-        this.shapes.torch.draw(context, program_state, model_transform,this.bumps);
+        this.shapes.torch.draw(context, program_state, model_transform,this.bumps);*/
       //torch2
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
@@ -446,11 +450,11 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         this.skipped_first_frame = true;
 
                                     // Start over on a new drawing, never displaying the prior one:
-        this.cube_2 = Mat4.translation( 82,9,-28 ).times(Mat4.rotation(0.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
+      /*  this.cube_2 = Mat4.translation( 82,9,-28 ).times(Mat4.rotation(0.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
 
         if(this.light_num[0]==1)
-          this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
+          this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );*/
        
         this.cube_2 = Mat4.translation( 59.5,9,2.2 ).times(Mat4.rotation(0.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
