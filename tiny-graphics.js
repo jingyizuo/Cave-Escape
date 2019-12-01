@@ -998,6 +998,7 @@ class Webgl_Manager
       this.set_size( dimensions );
       this.pixels=vec4(0,0,0,0);
       this.off=false;
+      this.sound=false;
                
       gl.clearColor.apply( gl, background_color );           // Tell the GPU which color to clear the canvas with each frame.
       gl.getExtension( "OES_element_index_uint" );           // Load an extension to allow shapes with more than 65535 vertices.

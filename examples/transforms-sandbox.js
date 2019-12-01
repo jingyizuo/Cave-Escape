@@ -37,6 +37,11 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes = { 'box'  : new Cube(),
                       'ball' : new Subdivision_Sphere( 4 ),
                       'cave' : new Shape_From_File("../assets/cave.obj"),
+                      'cave1' : new Shape_From_File("../assets/cave/cave1.obj"),
+                      'cave2' : new Shape_From_File("../assets/cave/cave2.obj"),
+                      'cave3' : new Shape_From_File("../assets/cave/cave3.obj"),
+                      'cave4' : new Shape_From_File("../assets/cave/cave4.obj"),
+                      'cave5' : new Shape_From_File("../assets/cave/cave5.obj"),
                       'torch' : new Shape_From_File("../assets/wall_torch.obj"),
                       'door_left' : new Shape_From_File("../assets/door_left.obj"),
                       'door_right' : new Shape_From_File("../assets/door_right.obj"),
@@ -361,7 +366,11 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       model_transform= Mat4.identity();
       model_transform=Mat4.scale(20,20,20).times(model_transform);
       model_transform=Mat4.translation(40,0,70).times(model_transform);
-      this.shapes.cave.draw(context, program_state, model_transform,this.bumps);
+      this.shapes.cave1.draw(context, program_state, model_transform,this.bumps);
+      this.shapes.cave2.draw(context, program_state, model_transform,this.bumps);
+      this.shapes.cave3.draw(context, program_state, model_transform,this.bumps);
+      this.shapes.cave4.draw(context, program_state, model_transform,this.bumps);
+      this.shapes.cave5.draw(context, program_state, model_transform,this.bumps);
 
       //left door
         if(this.mousepicking=="door_left" && this.is_key==true){
