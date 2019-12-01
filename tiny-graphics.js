@@ -1062,7 +1062,7 @@ class Webgl_Manager
           if(colorPicked[2]==1||colorPicked[2]==2||colorPicked[2]==3||colorPicked[2]==4){
             
            
-                 document.getElementById('fire_audio').src ="https://www.youtube.com/embed/mz9ftphTWTM?&autoplay=1&loop=1&playlist=mz9ftphTWTM";
+                 document.getElementById('fire_audio').src ="https://www.youtube.com/embed/zLiHMw-Pfxg?&autoplay=1&loop=1&playlist=zLiHMw-Pfxg";
               }
           
             
