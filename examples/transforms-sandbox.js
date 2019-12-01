@@ -28,6 +28,8 @@ export class Transforms_Sandbox_Base extends Scene
       this.framebuffer=null;
       this.light=false;
       this.light_num=[0,0,0,0];
+      this.gun=false;
+      this.shoot=false;
       this.light_pos=[vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1)];
       this.pixels=vec4(1,0,0,0);
       this.shapes = { 'box'  : new Cube(),
@@ -64,8 +66,9 @@ export class Transforms_Sandbox_Base extends Scene
                                                   // Here we use a Phong shader and the Material stores the scalar 
                                                   // coefficients that appear in the Phong lighting formulas so that the
                                                   // appearance of particular materials can be tweaked via these numbers.
-      const bump = new defs.Fake_Bump_Map(2);
-      const phong = new defs.Phong_Shader(2);
+      const bump = new defs.Fake_Bump_Map();
+      const phong = new defs.Phong_Shader();
+
       const off_shader=new defs.Offscreen_Shader(2);
       this.materials = { plastic: new Material( phong,
                                     { ambient: .3, diffusivity: 1, specularity: .5, color: color( .9,.5,.9,1 ) } ),
@@ -78,6 +81,8 @@ export class Transforms_Sandbox_Base extends Scene
                                                            // Bump mapped:
       this.bumps = new Material( new defs.Fake_Bump_Map( ), { color: color( .5,.5,.5,1 ), 
           ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/cave.png" ) });
+      this.wood = new Material( bump, { color: color( .5,.5,.5,1 ), 
+            ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/keybox.png" ) });
       this.offscreen=new Material( off_shader,
         { ambient: 1, color: color( 0,1,1,1 ) } );
 
@@ -137,6 +142,7 @@ export class Transforms_Sandbox_Base extends Scene
         break;
       case 9:
         this.mousepicking="gun";
+        this.gun=true;
         break;
       default:
         this.mousepicking=null;
@@ -247,19 +253,33 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           this.bumps=this.bumps.override({ambient: 0.13});
           break;
       }
-      //cube
+      //gun
       model_transform=Mat4.translation(30,-29,50).times(Mat4.scale(0.3,0.3,0.3)).times(Mat4.rotation(Math.PI/2,0,0,1));  
       if(this.light){
-        if(off){
-          this.shapes.gun_black.draw(context, program_state, model_transform,this.materials.plastic.override( color(0,0,9/255,1) ));
-          this.shapes.gun_silver.draw(context, program_state, model_transform,this.materials.plastic.override( color(0,0,9/255,1) ));
+        if(!this.gun){
+          if(off){
+            this.shapes.gun_black.draw(context, program_state, model_transform,this.offscreen.override( color(0,0,9/255,1) ));
+            this.shapes.gun_silver.draw(context, program_state, model_transform,this.offscreen.override( color(0,0,9/255,1) ));
+          }
+          else{
+            this.shapes.gun_black.draw(context, program_state, model_transform,this.materials.plastic.override( color(.1,.1,.1,1) ));
+            this.shapes.gun_silver.draw(context, program_state, model_transform,this.materials.metal.override( color(.75,.75,.75,1) ));
+          }
         }
         else{
+          model_transform=program_state.camera_transform.times(Mat4.translation(1,-2,-3)).times(Mat4.scale(.2,.2,-.2));
           this.shapes.gun_black.draw(context, program_state, model_transform,this.materials.plastic.override( color(.1,.1,.1,1) ));
-          this.shapes.gun_silver.draw(context, program_state, model_transform,this.materials.metal.override( color(.75,.75,.75,1) ));
+          this.shapes.gun_silver.draw(context, program_state, model_transform,this.materials.metal.override( color(.75,.75,.75,1) ));  
         }
-      }                                     
+        
+      }  
+      //keybox                                   
+      model_transform=Mat4.translation(25,-25,-40).times(Mat4.scale(3,3,3));
       
+      if(off)
+        this.shapes.box.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,7/255,1)));
+      else                                            
+        this.shapes.box.draw(context, program_state, model_transform,this.wood.override(color(0.75,0.5,0.3,1)));
 
 
       //torch1
@@ -397,13 +417,8 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[3]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
-        model_transform=Mat4.translation(25,-25,-40).times(Mat4.scale(3,3,3));
-        if(this.light){
-          if(off)
-            this.shapes.box.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,7/255,1)));
-          else                                            
-            this.shapes.box.draw(context, program_state, model_transform,this.offscreen);
-        }
+        
+       
         
                               // Note that our coordinate system stored in model_transform still has non-uniform scaling
 

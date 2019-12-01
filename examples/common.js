@@ -906,14 +906,14 @@ class Movement_Controls extends Scene
         var x=z.cross(up).normalized();
         var y=x.cross(z).normalized();
         this.ang-=angle2;
-        if(this.ang >= Math.PI/6) {
-          angle2=this.ang+angle2-Math.PI/6;
-          this.ang = Math.PI/6;
+        if(this.ang >= Math.PI/4) {
+          angle2=this.ang+angle2-Math.PI/4;
+          this.ang = Math.PI/4;
           //angle2=0;
         }
-        else if(this.ang <= -Math.PI/6) {
-          angle2=this.ang+angle2+Math.PI/6;
-          this.ang = -Math.PI/6;
+        else if(this.ang <= -Math.PI/4) {
+          angle2=this.ang+angle2+Math.PI/4;
+          this.ang = -Math.PI/4;
         }
         this.matrix().post_multiply( Mat4.rotation( +angle2,   1,0,0 ) );
         this.inverse().pre_multiply( Mat4.rotation( -angle2,   1,0,0 ) );
