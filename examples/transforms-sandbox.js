@@ -98,9 +98,9 @@ export class Transforms_Sandbox_Base extends Scene
             ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/keybox.png" ) });
       this.offscreen=new Material( off_shader,
         { ambient: 1, color: color( 0,1,1,1 ) } );
-      var answer_set_str=["001","010","011","100","101","110"];
-      var answer_set=[[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0]];
-      var key_num=getRandomInt(6);
+      var answer_set_str=["011","101","110"];
+      var answer_set=[[0,1,1],[1,0,1],[1,1,0]];
+      var key_num=getRandomInt(3);
       this.answer_str=answer_set_str[key_num];
       this.answer=answer_set[key_num];
       this.answer_photo = new Material(new defs.Textured_Phong(), { color: color( .5,.5,.5,1 ), 
@@ -116,22 +116,30 @@ export class Transforms_Sandbox_Base extends Scene
               case 1:
                 this.mousepicking="torch1";
                 this.light=true;
-                this.light_num[0]=(this.light_num[0]+1)%2;
+                if(!this.gun){
+                   this.light_num[0]=(this.light_num[0]+1)%2;
+                }
                 break;
               case 2:
                 this.mousepicking="torch2";
                 this.light=true;
-                this.light_num[1]=(this.light_num[1]+1)%2;
+                if(!this.gun){
+                   this.light_num[1]=(this.light_num[1]+1)%2;
+                }
                 break;
               case 3:
                 this.mousepicking="torch3";
                 this.light=true;
-                this.light_num[2]=(this.light_num[2]+1)%2;
+                if(!this.gun){
+                   this.light_num[2]=(this.light_num[2]+1)%2;
+                }
                 break;
               case 4:
                 this.mousepicking="torch4";
                 this.light=true;
-                this.light_num[3]=(this.light_num[3]+1)%2;
+                if(!this.gun){
+                   this.light_num[3]=(this.light_num[3]+1)%2;
+                }
                 break;
               case 5:
                 this.mousepicking="door_left";
@@ -188,7 +196,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.new_line();
       this.live_string( box => box.textContent = this.shoot);
       this.new_line();
-      this.live_string( box => box.textContent = "first: " + first_fire );
+      this.live_string( box => box.textContent = "shoot: " + this.shoot );
       this.new_line();
       this.live_string( box => box.textContent = "gun: " + gun_hold );
       this.new_line();
