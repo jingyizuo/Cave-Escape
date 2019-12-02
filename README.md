@@ -1,28 +1,5 @@
 
-# CS174AFinalProject
-
-## Syllabus
-1. 场景 枪(模型先不急) 门
-2. 开关灯改变颜色 墙上密码
-3. 以上步骤结束后根据时间，时间充裕则考虑是否增加机关／故事主线／风格装饰。无时间则按原计划
-4. 密码箱界面 打开
-
-## 细节
-1. 位置移动http://www.alloyteam.com/2016/09/built-with-webgl-3d-maze-game/
-2. 门 无交互 图片蒙皮(地板蒙皮)
-3. 门把 target （图形设计）
-4. 灯 没交互 光源变化 
-5. 开关 光源控制 位置变化
-6. 墙上字 开关变化直接显示
-
-
-## 进度
-1. 游戏逻辑 枪 射击 钥匙 开门
-2. texture装饰
-3. 移动光／点光（scren to texture）
-4. 碰撞检测／防止穿模
-5. 音效
-6. 鼠标晃动bug 
+# CS174A-Final-Project
 
 
 Our project is a first-person room escape game. The player will control a person locked in a room and try to find clues and props in order to get out. 
