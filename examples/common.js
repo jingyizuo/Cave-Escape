@@ -933,8 +933,12 @@ class Movement_Controls extends Scene
       //this.matrix().post_multiply( Mat4.rotation( -.1 * this.roll,   0,0,1 ) );
       //this.inverse().pre_multiply( Mat4.rotation( +.1 * this.roll,   0,0,1 ) );
                                     // Now apply translation movement of the camera, in the newest local coordinate frame.
+      this.matrix().post_multiply( Mat4.rotation( +this.ang,   1,0,0 ) );
+      this.inverse().pre_multiply( Mat4.rotation( -this.ang,   1,0,0 ) );
       this.matrix().post_multiply( Mat4.translation( ...this.thrust.times( -meters_per_frame ) ) );
       this.inverse().pre_multiply( Mat4.translation( ...this.thrust.times( +meters_per_frame ) ) );
+      this.matrix().post_multiply( Mat4.rotation( -this.ang,   1,0,0 ) );
+      this.inverse().pre_multiply( Mat4.rotation( +this.ang,   1,0,0 ) );
     }
 
   third_person_arcball( radians_per_frame )

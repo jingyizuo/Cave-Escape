@@ -175,10 +175,10 @@ export class Transforms_Sandbox_Base extends Scene
                 this.mousepicking=null;
             }
                   if(b==7&& this.gun==false && last_fire!=true){
-                        tempAlert("This BOX is LOCKED!",1000);
+                        tempAlert(" This BOX is LOCKED... ",1000);
                   }
                   if((b==5 ||b==6) && this.is_key==false){
-                        tempAlert("This DOOR is LOCKED!",1000);
+                        tempAlert("This DOOR is LOCKED...",1000);
                   }
                   if(b<=4 && b>=0 && this.gun==false){
                         tempAlert("TORCH",800);
@@ -189,8 +189,8 @@ export class Transforms_Sandbox_Base extends Scene
                   if(b==8){
                         tempAlert("KEY",800);
                   }
-                  if(b==10){
-                        tempAlert("STATUE",800);
+                  if(b==10 && this.gun==false){
+                        tempAlert("STATUE...Nothing Special",800);
                   }
             }
             else
@@ -228,60 +228,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.live_string( box => box.textContent = "last: " + last_fire );
       this.new_line();
     }
-  /*check(pixels){
-    var r=pixels[0];
-    var g=pixels[1];
-    var b=pixels[2];
-    switch(b) {
-      case 1:
-        this.mousepicking="torch1";
-        this.light=true;
-        this.light_num[0]=1;
-        break;
-      case 2:
-        this.mousepicking="torch2";
-        this.light=true;
-        this.light_num[1]=1;
-        break;
-      case 3:
-        this.mousepicking="torch3";
-        this.light=true;
-        this.light_num[2]=1;
-        break;
-      case 4:
-        this.mousepicking="torch4";
-        this.light=true;
-        this.light_num[3]=1;
-        break;
-      case 5:
-        this.mousepicking="door_left";
-        break;
-      case 6:
-        this.mousepicking="door_right";
-        break;
-      case 7:
-        this.mousepicking="keybox";
-        if(this.gun){
-          last_fire=true;
-          key=true;
-          this.shoot=true;
-          this.gun=false;
-          this.box=false;
-        }
-        break;
-      case 8:
-        this.mousepicking="key";
-        this.is_key=true;
-        break;
-      case 9:
-        this.mousepicking="gun";
-        this.gun=true;
-        first_fire=true;
-        break;
-      default:
-        this.mousepicking=null;
-    }
-  }*/
+ 
   show_explanation( document_section)
     {
    
@@ -412,7 +359,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         this.shapes.box_bottom.draw(context, program_state, model_transform,this.wood.override(color(0.75,0.5,0.3,1)));
         //this.shapes.box_lid.draw(context, program_state, model_transform,this.wood.override(color(0.75,0.5,0.3,1)));
         //this.shapes.box_side.draw(context, program_state, model_transform,this.wood.override(color(0.75,0.5,0.3,1)));
-        model_transform=model_transform.times(Mat4.translation(1,-1,0)).times(Mat4.rotation(Math.PI/2,1,0,0)).times(Mat4.scale(1.5,1.5,1.5));
+        model_transform=model_transform.times(Mat4.translation(0.4,-1,0.4)).times(Mat4.rotation(Math.PI/2,1,0,0)).times(Mat4.scale(1.5,1.5,1.5));
         if(!this.is_key){
           if(off){
             this.shapes.key.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,8/255,1)));
@@ -427,19 +374,8 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         model_transform=program_state.camera_transform.times(Mat4.translation(6,-3,-25)).times(Mat4.scale(10,10,10)).times(Mat4.rotation(Math.PI/2,0,1,0));
         this.shapes.key.draw(context, program_state, model_transform,this.materials.metal.override(color(0.5,0.5,0.1,1)));
       }
-      
 
-/*
-      //torch1
-      model_transform= Mat4.identity();
-      model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
-      model_transform=Mat4.scale(10,11,10).times(model_transform);
-      model_transform=Mat4.translation(40,-7,30).times(model_transform);
-      if(off){
-        this.shapes.torch.draw(context, program_state, model_transform,this.offscreen.override(color(0,0,1/255,1)));
-      }
-      else 
-        this.shapes.torch.draw(context, program_state, model_transform,this.bumps);*/
+
       //torch2
       model_transform= Mat4.identity();
       model_transform=Mat4.rotation(0.2,0,0,1).times(model_transform);
@@ -567,12 +503,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
             this.texture.copy_onto_graphics_card( context.context, false );
         this.skipped_first_frame = true;
 
-                                    // Start over on a new drawing, never displaying the prior one:
-      /*  this.cube_2 = Mat4.translation( 82,9,-28 ).times(Mat4.rotation(0.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
-  //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
-
-        if(this.light_num[0]==1)
-          this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );*/
+                                   
        
         this.cube_2 = Mat4.translation( 59.5,9,2.2 ).times(Mat4.rotation(0.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
@@ -596,14 +527,5 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
        }
        }
        
-       
-        
-                              // Note that our coordinate system stored in model_transform still has non-uniform scaling
-
-                              // due to our scale() call.  This could have undesired effects for subsequent transforms;
-                              // rotations will behave like shears.  To avoid this it may have been better to do the
-                              // scale() last and then immediately unscale after the draw.  Or better yet, don't store
-                              // the scaled matrix back in model_transform at all -- but instead in just a temporary
-                              // expression that we pass into draw(), or store under a different name.
     }
 }
