@@ -60,8 +60,8 @@
 <div id="main-canvas" class="canvas-widget" onclick="playSound();">
   <canvas id="surface"></canvas>
 </div>
-
 <div class="aim"></div>
+
 <script type=module >      // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
                            // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
   const element_to_replace = document.querySelector( "#main-canvas" );
@@ -71,6 +71,19 @@
 
 </script>
 <script>
+function tempAlert(msg,duration)
+
+    {
+     var el = document.createElement("div");
+     el.setAttribute("style","position:absolute;top:40%;left:20%;background-color:white;");
+     el.innerHTML = msg;
+     setTimeout(function(){
+      el.parentNode.removeChild(el);
+     },duration);
+     document.body.appendChild(el);
+    }
+
+
        var first_fire=false;
        var last_fire=false;
        var gun_hold=false;

@@ -51,7 +51,8 @@ export class Transforms_Sandbox_Base extends Scene
                       'gun_silver': new Shape_From_File("../assets/gunsliver.obj"),
                       'box_bottom': new Shape_From_File("../assets/box_open.obj"),
                       'box_unopened': new Shape_From_File("../assets/box_unopen.obj"),
-                      'key': new Shape_From_File("../assets/key.obj")
+                      'key': new Shape_From_File("../assets/key.obj"),
+                      'statue': new Shape_From_File("../assets/statue.obj")
                       
                     };
 
@@ -108,11 +109,12 @@ export class Transforms_Sandbox_Base extends Scene
 
 
       document.addEventListener( "mouseup",   e => {
-
+           
             var r=this.pixels[0];
             var g=this.pixels[1];
             var b=this.pixels[2];
-            switch(b) {
+            if(r==0 && g==0){
+                  switch(b) {
               case 1:
                 this.mousepicking="torch1";
                 this.light=true;
@@ -149,12 +151,12 @@ export class Transforms_Sandbox_Base extends Scene
                 break;
               case 7:
                 this.mousepicking="keybox";
-                if(this.gun){
+                if(this.gun){                      
                   last_fire=true;
                   key=true;
                   this.shoot=true;
                   this.gun=false;
-                  this.box=false;
+                  this.box=false;                  
                 }
                 break;
               case 8:
@@ -166,12 +168,35 @@ export class Transforms_Sandbox_Base extends Scene
                 this.gun=true;
                 first_fire=true;
                 break;
+              case 10:
+                this.mousepicking="statue";
+                break;
               default:
                 this.mousepicking=null;
             }
-    	    if(this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3]!=0 && this.sound==false){
+                  if(b==7&& this.gun==false && last_fire!=true){
+                        tempAlert("This BOX is LOCKED!",1000);
+                  }
+                  if((b==5 ||b==6) && this.is_key==false){
+                        tempAlert("This DOOR is LOCKED!",1000);
+                  }
+                  if(b<=4 && b>=0 && this.gun==false){
+                        tempAlert("TORCH",800);
+                  }
+                  if(b==9){
+                        tempAlert("GUN",800);
+                  }
+                  if(b==8){
+                        tempAlert("KEY",800);
+                  }
+                  if(b==10){
+                        tempAlert("STATUE",800);
+                  }
+            }
+            else
+                  this.mousepicking=null;
             
-                 
+    	    if(this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3]!=0 && this.sound==false){                
                  document.getElementById('fire_audio').src ="https://www.youtube.com/embed/zLiHMw-Pfxg?&autoplay=1&loop=1&playlist=zLiHMw-Pfxg";
                  this.sound=true;
             }
@@ -180,7 +205,7 @@ export class Transforms_Sandbox_Base extends Scene
                 document.getElementById('fire_audio').src ="";
                 this.sound=false;
             }
-
+            
 
 
            } );
@@ -355,7 +380,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           break;
       }
       //gun
-      model_transform=Mat4.translation(28,-17.7,8).times(Mat4.scale(0.3,0.3,0.3)).times(Mat4.rotation(Math.PI/2,0,0,1));  
+      model_transform=Mat4.translation(34,-2.7,11).times(Mat4.scale(0.3,0.3,0.3)).times(Mat4.rotation(0,0,0,1));  
       if(this.light_num[3]==this.answer[0] && this.light_num[2]==this.answer[1] && this.light_num[1]==this.answer[2]){
         if(!this.gun && this.shoot==false){
           if(off){
@@ -494,6 +519,8 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           }
           else
             this.shapes.door_right.draw(context, program_state, model_transform,this.bumps);
+          document.exitPointerLock();  
+          window.location.href='https://www.baidu.com/';
         }
         else{
           model_transform= Mat4.identity();
@@ -521,7 +548,16 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         this.shapes.door_plane.draw(context, program_state, model_transform,this.bumps);
 
 
-      
+        //statue
+        model_transform= Mat4.identity();
+        model_transform = Mat4.rotation(Math.PI/2,0,1,0).times(model_transform);
+        model_transform=Mat4.scale(50,60,50).times(model_transform);
+        model_transform=Mat4.translation(32,-19,10).times(model_transform);
+        if(off){
+            this.shapes.statue.draw(context,program_state,model_transform, this.offscreen.override(color(0,0,10/255,1)));
+        }
+        else
+            this.shapes.statue.draw(context,program_state,model_transform, this.bumps);
         this.texture.image.src = this.scratchpad.toDataURL("image/png");
 
                                     // Don't call copy to GPU until the event loop has had a chance
