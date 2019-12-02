@@ -32,6 +32,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.gun=false;
       this.shoot=false;
       this.is_key=false;
+      this.sound=false;
       this.light_pos=[vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1)];
       this.pixels=vec4(1,0,0,0);
       this.shapes = {
@@ -97,9 +98,84 @@ export class Transforms_Sandbox_Base extends Scene
             ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/keybox.png" ) });
       this.offscreen=new Material( off_shader,
         { ambient: 1, color: color( 0,1,1,1 ) } );
+      var answer_set_str=["001","010","011","100","101","110"];
+      var answer_set=[[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0]];
+      var key_num=getRandomInt(6);
+      this.answer_str=answer_set_str[key_num];
+      this.answer=answer_set[key_num];
+      this.answer_photo = new Material(new defs.Textured_Phong(), { color: color( .5,.5,.5,1 ), 
+            ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/answers/answer"+this.answer_str+".png" ) });
+
+
+      document.addEventListener( "mouseup",   e => {
+
+            var r=this.pixels[0];
+            var g=this.pixels[1];
+            var b=this.pixels[2];
+            switch(b) {
+              case 1:
+                this.mousepicking="torch1";
+                this.light=true;
+                this.light_num[0]=(this.light_num[0]+1)%2;
+                break;
+              case 2:
+                this.mousepicking="torch2";
+                this.light=true;
+                this.light_num[1]=(this.light_num[1]+1)%2;
+                break;
+              case 3:
+                this.mousepicking="torch3";
+                this.light=true;
+                this.light_num[2]=(this.light_num[2]+1)%2;
+                break;
+              case 4:
+                this.mousepicking="torch4";
+                this.light=true;
+                this.light_num[3]=(this.light_num[3]+1)%2;
+                break;
+              case 5:
+                this.mousepicking="door_left";
+                break;
+              case 6:
+                this.mousepicking="door_right";
+                break;
+              case 7:
+                this.mousepicking="keybox";
+                if(this.gun){
+                  last_fire=true;
+                  key=true;
+                  this.shoot=true;
+                  this.gun=false;
+                  this.box=false;
+                }
+                break;
+              case 8:
+                this.mousepicking="key";
+                this.is_key=true;
+                break;
+              case 9:
+                this.mousepicking="gun";
+                this.gun=true;
+                first_fire=true;
+                break;
+              default:
+                this.mousepicking=null;
+            }
+    	    if(this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3]!=0 && this.sound==false){
+            
+                 
+                 document.getElementById('fire_audio').src ="https://www.youtube.com/embed/zLiHMw-Pfxg?&autoplay=1&loop=1&playlist=zLiHMw-Pfxg";
+                 this.sound=true;
+            }
+            else if(this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3]!=0 && this.sound==true){}
+            else{
+                document.getElementById('fire_audio').src ="";
+                this.sound=false;
+            }
 
 
 
+           } );
   
 
     }
@@ -119,7 +195,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.live_string( box => box.textContent = "last: " + last_fire );
       this.new_line();
     }
-  check(pixels){
+  /*check(pixels){
     var r=pixels[0];
     var g=pixels[1];
     var b=pixels[2];
@@ -172,11 +248,7 @@ export class Transforms_Sandbox_Base extends Scene
       default:
         this.mousepicking=null;
     }
-    //light
-    if(b<=4 && b>=0 && this.first_light==null){
-
-    }
-  }
+  }*/
   show_explanation( document_section)
     {
    
@@ -213,7 +285,7 @@ export class Transforms_Sandbox_Base extends Scene
       }
       else
         program_state.lights = [ new Light(program_state.camera_transform.times( vec4( 0,-1,1,0 ) ),color(1,1,1,1),.3)];
-      this.check(this.pixels);
+      //this.check(this.pixels);
     }
 }
 
@@ -276,7 +348,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       }
       //gun
       model_transform=Mat4.translation(28,-17.7,8).times(Mat4.scale(0.3,0.3,0.3)).times(Mat4.rotation(Math.PI/2,0,0,1));  
-      if(this.light){
+      if(this.light_num[3]==this.answer[0] && this.light_num[2]==this.answer[1] && this.light_num[1]==this.answer[2]){
         if(!this.gun && this.shoot==false){
           if(off){
             this.shapes.gun_black.draw(context, program_state, model_transform,this.offscreen.override( color(0,0,9/255,1) ));
@@ -471,7 +543,13 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[3]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
-        
+       if(!off){
+         if(!key){
+          model_transform= Mat4.translation(50,-14,75.2).times(Mat4.scale(3,3,1)).times(Mat4.rotation(0,0,1,0));
+          this.shapes.plane.draw( context, program_state, model_transform, this.answer_photo ); 
+       }
+       }
+       
        
         
                               // Note that our coordinate system stored in model_transform still has non-uniform scaling

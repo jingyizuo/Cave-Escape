@@ -1059,13 +1059,13 @@ class Webgl_Manager
             gll.readPixels(width/2, height/2, 1, 1, gll.RGBA, gll.UNSIGNED_BYTE, colorPicked);
             //alert(colorPicked);
             this.pixels=colorPicked;
-          if((colorPicked[2]==1||colorPicked[2]==2||colorPicked[2]==3||colorPicked[2]==4)&& this.sound==false){
+          /*if((colorPicked[2]==1||colorPicked[2]==2||colorPicked[2]==3||colorPicked[2]==4)&& this.sound==false){
             
                  
                  document.getElementById('fire_audio').src ="https://www.youtube.com/embed/zLiHMw-Pfxg?&autoplay=1&loop=1&playlist=zLiHMw-Pfxg";
                  this.sound=true;
           }
-          document.getElementById('gun_audio').src ="https://www.youtube.com/embed/-lbUHipN0F0?start=2&autoplay=1";
+          document.getElementById('gun_audio').src ="https://www.youtube.com/embed/-lbUHipN0F0?start=2&autoplay=1";*/
          
             
 
