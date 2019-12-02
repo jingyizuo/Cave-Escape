@@ -468,6 +468,8 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           }
           else
             this.shapes.door_left.draw(context, program_state, model_transform,this.bumps);
+          document.exitPointerLock();  
+          window.location.href='https://www.baidu.com/';
         }
         else{
           model_transform= Mat4.identity();
