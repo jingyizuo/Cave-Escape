@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+
+        .div1 {
+            width: 100%;
+            height: 100%; 
+            background-image: url('assets/start.gif');
+            background-repeat:none;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            border: 1px solid red;
+            padding:0;
+            margin:0;
+     
+        }
+
+
+        .button {
+            position: absolute;
+            left: 830px;
+            top: 500px;
+            background:transparent; /* Black */
+            border: transparent;
+            color: red;
+            padding: 4px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 40px;
+            cursor: pointer;
+            box-shadow: 0 50px 100px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            
+
+        }
+
+        .txt{
+            background: transparent;
+            color:white;
+            padding: 2px, 5px;
+            text_align: center;
+
+
+        }
+
+    </style>
+
+<script src='https://wow.techbrood.com/libs/jquery/jquery-1.11.1.min.js'></script>
+    <iframe style="display:none" width="560" height="315" src="https://www.youtube.com/embed/zLiHMw-Pfxg?&autoplay=1&loop=1&playlist=zLiHMw-Pfxg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</head>
+
+<body>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.div1').css('height',$(document).innerHeight())
+    });
+    $(document).ready(function(){
+        $('.div1').css('width',$(document).innerWidth())
+    });
+</script>
+<div class= "div1">
+
+      
+<h1 style = "position: absolute; left: 650px; top: 90px; font-size: 40pt; filter: shadow(color=green); width: 100%; color: red; line-height: 150%; font-family: verdana"><b>CAVE ESCAPE </b></h1>
+<br>
+
+<p style = "text-align:left; position: absolute; left: 600px; top: 200px;  font-size:12pt; color: white; padding: 2px 5px; font-family: courier;">
+            You were kidnapped by a group of heresy. These people imprisoned <br> you in a dark cave.
+            You overheard their conversation and <br> knew that they intended to sacrifice <br> you to their evil gods. <br><br>
+            They just left for making preparations of the sacrificial cult,<br>
+            you must solve the riddle of this cave, <br>
+        find the way and escape before they come back.
+</p>
+    
+    <button class="button" onclick = "window.location.href= 'http://localhost:8000';"">Start</button>
+
+</div>
+
+
+</body>
+
+</html>

@@ -15,8 +15,8 @@ class Canvas_Widget
   constructor( element, initial_scenes, options = {} )   
     { this.element = element;
 
-      const defaults = { show_canvas: true, make_controls: true, show_explanation: true, 
-                         make_editor: false, make_code_nav: true };
+      const defaults = { show_canvas: true, make_controls: false, show_explanation: false, 
+                         make_editor: false, make_code_nav: false };
       if( initial_scenes && initial_scenes[0] )
         Object.assign( options, initial_scenes[0].widget_options );
       Object.assign( this, defaults, options )
@@ -141,7 +141,7 @@ class Controls_Widget
         scene.control_panel = control_panel;
         scene.timestamp = time;
                                                         // Draw each registered animation:
-        scene.make_control_panel();                     
+        //scene.make_control_panel();                     
       }
     }
   render( time = 0 )

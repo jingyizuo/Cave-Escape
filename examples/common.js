@@ -808,67 +808,39 @@ class Movement_Controls extends Scene
         }
       } );
       canvas  .addEventListener( "mouseout",  e => { if( !this.mouse.anchor ) this.mouse.from_center.scale_by(0) } );
+      document.addEventListener( "keydown",  e => { 
+          var code = e.keyCode;
+            switch(code) {
+            case 87:
+                this.thrust[2] =  1;
+                break;
+            case 83:
+                this.thrust[2] = -1;
+                break;
+            case 65:
+                this.thrust[0] =  1;
+                break;
+            case 68:
+                this.thrust[0] = -1;
+                break;
+            default:
+        }
+
+      } );
+      document.addEventListener( "keyup", e =>{
+            this.thrust[0]=0;
+            this.thrust[2]=0;} );
     }
   show_explanation( document_element ) { }
   make_control_panel()
     {                                 // make_control_panel(): Sets up a panel of interactive HTML elements, including
-                                      // buttons with key bindings for affecting this scene, and live info readouts.
-      this.control_panel.innerHTML += "Click and drag the scene to <br> spin your viewpoint around it.<br>";
-      this.key_triggered_button( "Up",     [ " " ], () => this.thrust[1] = -1, undefined, () => this.thrust[1] = 0 );
+                                      // buttons with key bindings for affecting this scene, and live info readouts    
       this.key_triggered_button( "Forward",[ "w" ], () => this.thrust[2] =  1, undefined, () => this.thrust[2] = 0 );
-      this.new_line();
       this.key_triggered_button( "Left",   [ "a" ], () => this.thrust[0] =  1, undefined, () => this.thrust[0] = 0 );
       this.key_triggered_button( "Back",   [ "s" ], () => this.thrust[2] = -1, undefined, () => this.thrust[2] = 0 );
       this.key_triggered_button( "Right",  [ "d" ], () => this.thrust[0] = -1, undefined, () => this.thrust[0] = 0 );
       this.new_line();
-      this.key_triggered_button( "Down",   [ "z" ], () => this.thrust[1] =  1, undefined, () => this.thrust[1] = 0 ); 
-
-      const speed_controls = this.control_panel.appendChild( document.createElement( "span" ) );
-      speed_controls.style.margin = "30px";
-      this.key_triggered_button( "-",  [ "o" ], () => 
-                                            this.speed_multiplier  /=  1.2, "green", undefined, undefined, speed_controls );
-      this.live_string( box => { box.textContent = "Speed: " + this.speed_multiplier.toFixed(2) }, speed_controls );
-      this.key_triggered_button( "+",  [ "p" ], () => 
-                                            this.speed_multiplier  *=  1.2, "green", undefined, undefined, speed_controls );
-      this.new_line();
-      this.key_triggered_button( "Roll left",  [ "," ], () => this.roll =  1, undefined, () => this.roll = 0 );
-      this.key_triggered_button( "Roll right", [ "." ], () => this.roll = -1, undefined, () => this.roll = 0 );
-      this.new_line();
-      this.key_triggered_button( "(Un)freeze mouse look around", [ "f" ], () => this.look_around_locked ^=  1, "green" );
-      this.new_line();
-      this.live_string( box => box.textContent = "Position: " + this.pos[0].toFixed(2) + ", " + this.pos[1].toFixed(2) 
-                                                       + ", " + this.pos[2].toFixed(2) );
-      this.new_line();
-                                                  // The facing directions are surprisingly affected by the left hand rule:
-      this.live_string( box => box.textContent = "Facing: " + ( ( this.z_axis[0] > 0 ? "West " : "East ")
-                   + ( this.z_axis[1] > 0 ? "Down " : "Up " ) + ( this.z_axis[2] > 0 ? "North" : "South" ) ) );
-      this.new_line();
-      this.key_triggered_button( "Go to world origin", [ "r" ], () => { this. matrix().set_identity( 4,4 );
-                                                                        this.inverse().set_identity( 4,4 ) }, "orange" );
-      this.new_line();
-      this.live_string( box => box.textContent = "angle: " + this.ang );
-      this.new_line();
-      this.key_triggered_button( "Look at origin from front", [ "1" ], () =>
-        { this.inverse().set( Mat4.look_at( vec3( 0,0,10 ), vec3( 0,0,0 ), vec3( 0,1,0 ) ) );
-          this. matrix().set( Mat4.inverse( this.inverse() ) );
-        }, "black" );
-      this.new_line();
-      this.key_triggered_button( "from right", [ "2" ], () =>
-        { this.inverse().set( Mat4.look_at( vec3( 10,0,0 ), vec3( 0,0,0 ), vec3( 0,1,0 ) ) );
-          this. matrix().set( Mat4.inverse( this.inverse() ) );
-        }, "black" );
-      this.key_triggered_button( "from rear", [ "3" ], () =>
-        { this.inverse().set( Mat4.look_at( vec3( 0,0,-10 ), vec3( 0,0,0 ), vec3( 0,1,0 ) ) );
-          this. matrix().set( Mat4.inverse( this.inverse() ) );
-        }, "black" );   
-      this.key_triggered_button( "from left", [ "4" ], () =>
-        { this.inverse().set( Mat4.look_at( vec3( -10,0,0 ), vec3( 0,0,0 ), vec3( 0,1,0 ) ) );
-          this. matrix().set( Mat4.inverse( this.inverse() ) );
-        }, "black" );
-      this.new_line();
-      this.key_triggered_button( "Attach to global camera", [ "Shift", "R" ],
-                                                 () => { this.will_take_over_graphics_state = true }, "blue" );
-      this.new_line();
+   
     }
   
   first_person_flyaround( radians_per_frame, meters_per_frame, leeway = 70 )
@@ -906,14 +878,14 @@ class Movement_Controls extends Scene
         var x=z.cross(up).normalized();
         var y=x.cross(z).normalized();
         this.ang-=angle2;
-        if(this.ang >= Math.PI/4) {
-          angle2=this.ang+angle2-Math.PI/4;
-          this.ang = Math.PI/4;
+        if(this.ang >= Math.PI/3) {
+          angle2=this.ang+angle2-Math.PI/3;
+          this.ang = Math.PI/3;
           //angle2=0;
         }
-        else if(this.ang <= -Math.PI/4) {
-          angle2=this.ang+angle2+Math.PI/4;
-          this.ang = -Math.PI/4;
+        else if(this.ang <= -Math.PI/3) {
+          angle2=this.ang+angle2+Math.PI/3;
+          this.ang = -Math.PI/3;
         }
         this.matrix().post_multiply( Mat4.rotation( +angle2,   1,0,0 ) );
         this.inverse().pre_multiply( Mat4.rotation( -angle2,   1,0,0 ) );
@@ -990,9 +962,7 @@ class Program_State_Viewer extends Scene
 {                                             // **Program_State_Viewer** just toggles, monitors, and reports some
                                               // global values via its control panel.
   make_control_panel()
-    {                         // display() of this scene will replace the following object:
-      this.program_state = {};
-      this.key_triggered_button( "(Un)pause animation", ["Alt", "a"], () => this.program_state.animate ^= 1 );    
+    {                         // display() of this scene will replace the following object:  
     }
   display( context, program_state )
     { this.program_state = program_state;      
@@ -1174,12 +1144,7 @@ const Scene_To_Texture_Demo = defs.Scene_To_Texture_Demo =
         this.cube_2 = Mat4.translation(  2,0,0 );
       }
     make_control_panel()
-      { this.key_triggered_button( "Cube rotation",  [ "c" ], () => this.spin ^= 1 );
-
-        this.live_string( box => { box.textContent = this.spin } );  this.new_line();
-
-        this.result_img = this.control_panel.appendChild( Object.assign( document.createElement( "img" ), 
-                { style:"width:200px; height:" + 200 * this.aspect_ratio + "px" } ) );
+      { 
       }
     display( context, program_state )
       {                                 // display():  Draw both scenes, clearing the buffer in between.

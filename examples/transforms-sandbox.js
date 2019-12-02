@@ -215,18 +215,6 @@ export class Transforms_Sandbox_Base extends Scene
   make_control_panel()
     {                                 // make_control_panel(): Sets up a panel of interactive HTML elements, including
                                       // buttons with key bindings for affecting this scene, and live info readouts.
-      this.live_string( box => box.textContent = this.pixels);
-      this.new_line();
-      this.live_string( box => box.textContent = this.mousepicking);
-      this.new_line();
-      this.live_string( box => box.textContent = this.shoot);
-      this.new_line();
-      this.live_string( box => box.textContent = "shoot: " + this.shoot );
-      this.new_line();
-      this.live_string( box => box.textContent = "gun: " + gun_hold );
-      this.new_line();
-      this.live_string( box => box.textContent = "last: " + last_fire );
-      this.new_line();
     }
  
   show_explanation( document_section)
@@ -312,18 +300,23 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
       switch(this.num){
         case 0:
           this.bumps=this.bumps.override({ambient: .02});
+          this.wood=this.wood.override({ambient: .02});
           break;
         case 1:
-          this.bumps=this.bumps.override({ambient: 0.06});
+          this.bumps=this.bumps.override({ambient: 0.05});
+          this.wood=this.wood.override({ambient: 0.06});
           break;
         case 2:
-          this.bumps=this.bumps.override({ambient: 0.08});
+          this.bumps=this.bumps.override({ambient: 0.07});
+          this.wood=this.wood.override({ambient: 0.08});
           break;
         case 3:
-          this.bumps=this.bumps.override({ambient: 0.10});
+          this.bumps=this.bumps.override({ambient: 0.09});
+          this.wood=this.wood.override({ambient: 0.10});
           break;
         case 4:
-          this.bumps=this.bumps.override({ambient: 0.11});
+          this.bumps=this.bumps.override({ambient: 0.10});
+          this.wood=this.wood.override({ambient: 0.11});
           break;
       }
       //gun
@@ -430,7 +423,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           else
             this.shapes.door_left.draw(context, program_state, model_transform,this.bumps);
           document.exitPointerLock();  
-          window.location.href='https://www.baidu.com/';
+          window.location.href='end.html';
         }
         else{
           model_transform= Mat4.identity();
@@ -456,7 +449,7 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           else
             this.shapes.door_right.draw(context, program_state, model_transform,this.bumps);
           document.exitPointerLock();  
-          window.location.href='https://www.baidu.com/';
+          window.location.href='end.html';
         }
         else{
           model_transform= Mat4.identity();

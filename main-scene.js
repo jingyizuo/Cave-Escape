@@ -11,18 +11,10 @@ const { Vector, Vector3, vec, vec3, vec4, color, Matrix, Mat4, Light, Shape, Mat
     //                      (On the web, a server should instead just pack all these as well 
     //                      as common.js into one file for you, such as "dependencies.js")
 
-const Minimal_Webgl_Demo = defs.Minimal_Webgl_Demo;
-import { Obj_File_Demo }
-  from "./examples/obj-file-demo.js"
-import { Scene_To_Texture_Demo }
-  from "./examples/scene-to-texture-demo.js"
 import { Transforms_Sandbox }
   from "./examples/transforms-sandbox.js"
 
-Object.assign( defs,
-                     { Obj_File_Demo },
-                     { Scene_To_Texture_Demo },
-                     { Transforms_Sandbox } );
+Object.assign( defs, { Transforms_Sandbox } );
 
     // ******************** End extra step
 

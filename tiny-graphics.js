@@ -1155,7 +1155,7 @@ class Scene
                                                   // function/method of a Scene.  Optional release callback as well.
       const button = parent.appendChild( document.createElement( "button" ) );
       button.default_color = button.style.backgroundColor = color;
-      const  press = () => { Object.assign( button.style, { 'background-color' : 'red', 
+      const  press = () => { Object.assign( button.style, { 'display': 'none','background-color' : 'red', 
                                                             'z-index': "1", 'transform': "scale(2)" } );
                              callback.call( recipient );
                            },
