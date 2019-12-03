@@ -1,4 +1,4 @@
-import {tiny, defs} from 'jingyizuo.github.io/CS174AFinalProject/common.js';
+import {tiny, defs} from './common.js';
 
                                                   // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene } = tiny;
@@ -36,23 +36,23 @@ export class Transforms_Sandbox_Base extends Scene
       this.light_pos=[vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1)];
       this.pixels=vec4(1,0,0,0);
       this.shapes = {
-                      'cave1' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/cave/cave1.obj"),
-                      'cave2' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/cave/cave2.obj"),
-                      'cave3' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/cave/cave3.obj"),
-                      'cave4' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/cave/cave4.obj"),
-                      'cave5' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/cave/cave5.obj"),
-                      'torch' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/wall_torch.obj"),
-                      'door_left' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/door_left.obj"),
-                      'door_right' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/door_right.obj"),
-                      'door_plane' : new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/doorplane.obj"),                      
-                      'gun':   new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/Pistol_obj.obj"),
+                      'cave1' : new Shape_From_File("../assets/cave/cave1.obj"),
+                      'cave2' : new Shape_From_File("../assets/cave/cave2.obj"),
+                      'cave3' : new Shape_From_File("../assets/cave/cave3.obj"),
+                      'cave4' : new Shape_From_File("../assets/cave/cave4.obj"),
+                      'cave5' : new Shape_From_File("../assets/cave/cave5.obj"),
+                      'torch' : new Shape_From_File("../assets/wall_torch.obj"),
+                      'door_left' : new Shape_From_File("../assets/door_left.obj"),
+                      'door_right' : new Shape_From_File("../assets/door_right.obj"),
+                      'door_plane' : new Shape_From_File("../assets/doorplane.obj"),                      
+                      'gun':   new Shape_From_File("../assets/Pistol_obj.obj"),
                       'plane': new defs.Square(),
-                      'gun_black': new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/gunblack.obj"),
-                      'gun_silver': new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/gunsliver.obj"),
-                      'box_bottom': new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/box_open.obj"),
-                      'box_unopened': new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/box_unopen.obj"),
-                      'key': new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/key.obj"),
-                      'statue': new Shape_From_File("jingyizuo.github.io/CS174AFinalProject/assets/statue.obj")
+                      'gun_black': new Shape_From_File("../assets/gunblack.obj"),
+                      'gun_silver': new Shape_From_File("../assets/gunsliver.obj"),
+                      'box_bottom': new Shape_From_File("../assets/box_open.obj"),
+                      'box_unopened': new Shape_From_File("../assets/box_unopen.obj"),
+                      'key': new Shape_From_File("../assets/key.obj"),
+                      'statue': new Shape_From_File("../assets/statue.obj")
                       
                     };
 
@@ -94,9 +94,9 @@ export class Transforms_Sandbox_Base extends Scene
           
                                                            // Bump mapped:
       this.bumps = new Material( new defs.Fake_Bump_Map( ), { color: color( .5,.5,.5,1 ), 
-          ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "jingyizuo.github.io/CS174AFinalProject/assets/cave.png" ) });
+          ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/cave.png" ) });
       this.wood = new Material( bump, { color: color( .5,.5,.5,1 ), 
-            ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "jingyizuo.github.io/CS174AFinalProject/assets/keybox.png" ) });
+            ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/keybox.png" ) });
       this.offscreen=new Material( off_shader,
         { ambient: 1, color: color( 0,1,1,1 ) } );
       var answer_set_str=["011","101","110"];
@@ -105,7 +105,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.answer_str=answer_set_str[key_num];
       this.answer=answer_set[key_num];
       this.answer_photo = new Material(new defs.Textured_Phong(), { color: color( .5,.5,.5,1 ), 
-            ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "jingyizuo.github.io/CS174AFinalProject/assets/answers/answer"+this.answer_str+".png" ) });
+            ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/answers/answer"+this.answer_str+".png" ) });
 
 
       document.addEventListener( "mouseup",   e => {
@@ -304,19 +304,19 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           break;
         case 1:
           this.bumps=this.bumps.override({ambient: 0.05});
-          this.wood=this.wood.override({ambient: 0.06});
+          this.wood=this.wood.override({ambient: 0.05});
           break;
         case 2:
           this.bumps=this.bumps.override({ambient: 0.07});
-          this.wood=this.wood.override({ambient: 0.08});
+          this.wood=this.wood.override({ambient: 0.07});
           break;
         case 3:
           this.bumps=this.bumps.override({ambient: 0.09});
-          this.wood=this.wood.override({ambient: 0.10});
+          this.wood=this.wood.override({ambient: 0.09});
           break;
         case 4:
           this.bumps=this.bumps.override({ambient: 0.10});
-          this.wood=this.wood.override({ambient: 0.11});
+          this.wood=this.wood.override({ambient: 0.10});
           break;
       }
       //gun

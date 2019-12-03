@@ -1,5 +1,5 @@
 
-# CS174A-Final-Project
+# CS174AFinalProject
 
 Our project is a first-person room escape game. The player will control a person locked in a room and try to find clues and props in order to get out. 
 There are currently two puzzles in the room. Player needs to solve them in a certain order to get out of the room. When the main character turns off the light, a fluorescent password will appear. Then the character can open a safe box using the password. A pistol will appear and the character then can broke the door lock with the pistol and escape.The interactions involved in the game are: 
