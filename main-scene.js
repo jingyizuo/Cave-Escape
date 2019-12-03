@@ -1,4 +1,4 @@
-import {tiny, defs} from './examples/common.js';
+import {tiny, defs} from 'examples/common.js';
                                                   // Pull these names into this module's scope for convenience:
 const { Vector, Vector3, vec, vec3, vec4, color, Matrix, Mat4, Light, Shape, Material, Shader, Texture, Scene,
         Canvas_Widget, Code_Widget, Text_Widget } = tiny;
@@ -12,7 +12,7 @@ const { Vector, Vector3, vec, vec3, vec4, color, Matrix, Mat4, Light, Shape, Mat
     //                      as common.js into one file for you, such as "dependencies.js")
 
 import { Transforms_Sandbox }
-  from "./examples/transforms-sandbox.js"
+  from "examples/transforms-sandbox.js"
 
 Object.assign( defs, { Transforms_Sandbox } );
 
