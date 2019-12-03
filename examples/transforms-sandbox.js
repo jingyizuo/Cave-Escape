@@ -1,4 +1,4 @@
-import {tiny, defs} from './common.js';
+import {tiny, defs} from 'common.js';
 
                                                   // Pull these names into this module's scope for convenience:
 const { vec3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene } = tiny;
@@ -36,23 +36,23 @@ export class Transforms_Sandbox_Base extends Scene
       this.light_pos=[vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1),vec4(0,0,0,1)];
       this.pixels=vec4(1,0,0,0);
       this.shapes = {
-                      'cave1' : new Shape_From_File("../assets/cave/cave1.obj"),
-                      'cave2' : new Shape_From_File("../assets/cave/cave2.obj"),
-                      'cave3' : new Shape_From_File("../assets/cave/cave3.obj"),
-                      'cave4' : new Shape_From_File("../assets/cave/cave4.obj"),
-                      'cave5' : new Shape_From_File("../assets/cave/cave5.obj"),
-                      'torch' : new Shape_From_File("../assets/wall_torch.obj"),
-                      'door_left' : new Shape_From_File("../assets/door_left.obj"),
-                      'door_right' : new Shape_From_File("../assets/door_right.obj"),
-                      'door_plane' : new Shape_From_File("../assets/doorplane.obj"),                      
-                      'gun':   new Shape_From_File("../assets/Pistol_obj.obj"),
+                      'cave1' : new Shape_From_File("assets/cave/cave1.obj"),
+                      'cave2' : new Shape_From_File("assets/cave/cave2.obj"),
+                      'cave3' : new Shape_From_File("assets/cave/cave3.obj"),
+                      'cave4' : new Shape_From_File("assets/cave/cave4.obj"),
+                      'cave5' : new Shape_From_File("assets/cave/cave5.obj"),
+                      'torch' : new Shape_From_File("assets/wall_torch.obj"),
+                      'door_left' : new Shape_From_File("assets/door_left.obj"),
+                      'door_right' : new Shape_From_File("assets/door_right.obj"),
+                      'door_plane' : new Shape_From_File("assets/doorplane.obj"),                      
+                      'gun':   new Shape_From_File("assets/Pistol_obj.obj"),
                       'plane': new defs.Square(),
-                      'gun_black': new Shape_From_File("../assets/gunblack.obj"),
-                      'gun_silver': new Shape_From_File("../assets/gunsliver.obj"),
-                      'box_bottom': new Shape_From_File("../assets/box_open.obj"),
-                      'box_unopened': new Shape_From_File("../assets/box_unopen.obj"),
-                      'key': new Shape_From_File("../assets/key.obj"),
-                      'statue': new Shape_From_File("../assets/statue.obj")
+                      'gun_black': new Shape_From_File("assets/gunblack.obj"),
+                      'gun_silver': new Shape_From_File("assets/gunsliver.obj"),
+                      'box_bottom': new Shape_From_File("assets/box_open.obj"),
+                      'box_unopened': new Shape_From_File("assets/box_unopen.obj"),
+                      'key': new Shape_From_File("assets/key.obj"),
+                      'statue': new Shape_From_File("assets/statue.obj")
                       
                     };
 
