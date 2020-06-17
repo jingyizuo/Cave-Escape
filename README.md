@@ -54,7 +54,7 @@
 
   Design game scene.
   
-  Generate the 3D models. Use Blender 2.80 to generate the 3D models, then export them as obj files. Further, use tiny graphics/ obj-files-demo to import these models into the project, construct them as the game scene. 
+  Generate the 3D models. Use Blender 2.80 to generate the 3D models, then export them as obj files. Further, use tiny graphics/ obj-files-demo to import these models into the project, construct them as the game scene. Add features of mouse clicking, etc. 
   
   Create and design the GAME START and GAME END pages . To improve the user experience, create two new .html files, use HTML and CSS to create button menu in the START page, link the button to the index.html which is the context of the game. Further, to make landscaping of the pages, record the game scene video and convert to .gif file and use it as background. 
 
