@@ -59,6 +59,8 @@ python3 server.py    # optional; PORT=9000 python3 server.py to fix the base por
 
 Import the repository, preset **Other**, leave **Build Command** and **Output Directory** empty. Production serves **`index.html`** at `/` and **`game.html`** for the WebGL client.
 
+**Embedding `game.html` in another site (e.g. a portfolio iframe):** your parent page’s CSP / sandbox is out of this repo’s control, but this project ships **`vercel.json`** headers on **`/game.html`** (`Content-Security-Policy: frame-ancestors *`, plus a permissive `Permissions-Policy`) so the game origin explicitly allows cross-origin framing. Console warnings that still attribute to **`game.html`** are often from **third-party embeds** (YouTube iframes for ambience): this repo registers **no** `unload` / `beforeunload` listeners; background YouTube is **deferred** until the first `pointerdown` or `keydown` inside the game frame to reduce early third-party work. Torch “fire” audio still loads a YouTube iframe when torches are lit. `python3 server.py` applies the same `game.html` headers for local checks.
+
 ---
 
 ## Repository layout

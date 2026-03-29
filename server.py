@@ -33,7 +33,24 @@ else:
     import http.server
     import socketserver
 
-    Handler = http.server.SimpleHTTPRequestHandler
+    class GameEmbedHeadersHandler(http.server.SimpleHTTPRequestHandler):
+        """Match Vercel headers for game.html so iframe / portfolio embed behaves the same locally."""
+
+        def end_headers(self):
+            path = self.path.split("?", 1)[0].rstrip("/") or "/"
+            base = path.split("/")[-1]
+            if base == "game.html":
+                self.send_header(
+                    "Content-Security-Policy",
+                    "frame-ancestors *",
+                )
+                self.send_header(
+                    "Permissions-Policy",
+                    "accelerometer=*, gyroscope=*, encrypted-media=*, fullscreen=(self)",
+                )
+            super().end_headers()
+
+    Handler = GameEmbedHeadersHandler
 
     Handler.extensions_map={
         '.manifest': 'text/cache-manifest',
