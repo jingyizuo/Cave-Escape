@@ -6,13 +6,13 @@ First-person WebGL room-escape prototype developed for **UCLA CS174A (Computer G
 
 ## Technical highlights
 
-| Topic | Implementation |
-|--------|----------------|
-| **Object picking** | Off-screen framebuffer pass: each interactive mesh is rendered with a distinct ID color via an offscreen shader variant; `readPixels` at the reticle resolves the hit object. Classic **color-index / ID buffer** picking aligned with the real-time pipeline. |
-| **First-person navigation** | WASD translation and mouse-driven camera rotation derived from cursor delta; uses the course **view / projection** matrices and camera stack (`Movement_Controls` in the bundled framework). |
-| **Lighting & gameplay** | **Phong-style** shading and torch toggles change global illumination; extinguishing lights reveals a **fluorescent hint texture**, tying shading to puzzle state. |
-| **Fire visualization** | **2D canvas particle system** (position, lifetime, radial gradients); frames are sampled into a **dynamic WebGL texture** applied to billboards—*screen-to-texture*, not volumetric simulation. |
-| **Asset pipeline** | Cave and props modeled in **Blender**, exported as **OBJ**, loaded at runtime and instanced with per-object transforms and UV treatment where needed. |
+| Topic                       | Implementation                                                                                                                                                                                                                                                 |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Object picking**          | Off-screen framebuffer pass: each interactive mesh is rendered with a distinct ID color via an offscreen shader variant; `readPixels` at the reticle resolves the hit object. Classic **color-index / ID buffer** picking aligned with the real-time pipeline. |
+| **First-person navigation** | WASD translation and mouse-driven camera rotation derived from cursor delta; uses the course **view / projection** matrices and camera stack (`Movement_Controls` in the bundled framework).                                                                   |
+| **Lighting & gameplay**     | **Phong-style** shading and torch toggles change global illumination; extinguishing lights reveals a **fluorescent hint texture**, tying shading to puzzle state.                                                                                              |
+| **Fire visualization**      | **2D canvas particle system** (position, lifetime, radial gradients); frames are sampled into a **dynamic WebGL texture** applied to billboards—_screen-to-texture_, not volumetric simulation.                                                                |
+| **Asset pipeline**          | Cave and props modeled in **Blender**, exported as **OBJ**, loaded at runtime and instanced with per-object transforms and UV treatment where needed.                                                                                                          |
 
 <p align="center">
   <img src="screenshot_README/mouse_picking.gif" alt="Framebuffer picking" width="420" />
@@ -30,9 +30,9 @@ Solve torch combinations using wall hints, open the safe, acquire the pistol, an
 
 ## Controls
 
-- **W A S D** — Move  
-- **Mouse** — Look  
-- **Click** — Interact / pick up  
+- **W A S D** — Move
+- **Mouse** — Look
+- **Click** — Interact / pick up
 
 ---
 
@@ -49,8 +49,8 @@ npm run dev          # opens index.html; live reload
 python3 server.py    # optional; PORT=9000 python3 server.py to fix the base port
 ```
 
-- **Start screen:** `/` → `index.html`  
-- **Game:** `game.html`  
+- **Start screen:** `/` → `index.html`
+- **Game:** `game.html`
 - **host.bat** / **host.command** — launch `server.py` (Windows / macOS).
 
 ---
@@ -65,14 +65,14 @@ Import the repository, preset **Other**, leave **Build Command** and **Output Di
 
 ## Repository layout
 
-| Path | Role |
-|------|------|
-| `game.html` | WebGL canvas and game bootstrap |
-| `index.html` / `end.html` | Shell pages |
-| `src/` | Application modules (scene graph, picking logic, UI hooks, fire particles) |
-| `lib/` | Course graphics framework (`tiny-graphics`, widgets, `common/index.js`) |
-| `assets/` | `models/` (OBJ), `textures/`, `audio/`, `ui/`, `shell/` (GIF backgrounds) |
-| `styles/` / `js/` | Page CSS and shell layout helper |
+| Path                      | Role                                                                       |
+| ------------------------- | -------------------------------------------------------------------------- |
+| `game.html`               | WebGL canvas and game bootstrap                                            |
+| `index.html` / `end.html` | Shell pages                                                                |
+| `src/`                    | Application modules (scene graph, picking logic, UI hooks, fire particles) |
+| `lib/`                    | Course graphics framework (`tiny-graphics`, widgets, `common/index.js`)    |
+| `assets/`                 | `models/` (OBJ), `textures/`, `audio/`, `ui/`, `shell/` (GIF backgrounds)  |
+| `styles/` / `js/`         | Page CSS and shell layout helper                                           |
 
 ---
 
