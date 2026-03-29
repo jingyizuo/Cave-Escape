@@ -1,19 +1,36 @@
-.div1 {
-  width: 100%;
-  height: 100%;
-  background-image: url("../assets/shell/start.gif");
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
-  border: 1px solid red;
-  padding: 0;
+/* Start page: full-viewport background (works before shell-fit.js runs). */
+html.start-shell,
+html.start-shell body {
   margin: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+html.start-shell body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+html.start-shell .div1 {
+  box-sizing: border-box;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-color: #0a0a0a;
+  background-image: url("../assets/shell/start.gif");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  /* scroll avoids broken fixed-attachment on iOS and some compositors */
+  background-attachment: scroll;
 }
 
 .start-shell .button {
   position: absolute;
-  left: 830px;
-  top: 500px;
+  left: clamp(12px, 52vw, 830px);
+  top: clamp(280px, 52vh, 500px);
   background: transparent;
   border: transparent;
   color: red;
@@ -22,7 +39,7 @@
   text-decoration: none;
   box-sizing: border-box;
   display: inline-block;
-  font-size: 40px;
+  font-size: clamp(24px, 4vw, 40px);
   cursor: pointer;
   box-shadow: 0 50px 100px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
