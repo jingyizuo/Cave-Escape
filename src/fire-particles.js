@@ -1,10 +1,18 @@
 /**
- * 2D fire particle canvas used as a dynamic texture in the WebGL scene.
+ * 2D fire particle canvas on #surface; sampled into the WebGL flame texture.
+ * Must run after CaveSceneBase resizes #surface (256×256), otherwise the
+ * canvas reset wipes the 2D context state from an earlier init.
  */
-function initFireParticles() {
-  const space = document.getElementById( 'surface' );
-  if ( !space ) return;
-  const surface = space.getContext( '2d' );
+let fireLoopStarted = false;
+
+export function initFireParticles() {
+  const space = document.getElementById( "surface" );
+  if ( !space || fireLoopStarted ) return;
+
+  const surface = space.getContext( "2d", { willReadFrequently: true } );
+  if ( !surface ) return;
+
+  fireLoopStarted = true;
   surface.scale( 4, 3 );
 
   const particles = [];
@@ -12,8 +20,8 @@ function initFireParticles() {
   for ( let i = 0; i < particle_count; i++ )
     particles.push( new Particle() );
 
-  space.style.width = '500px';
-  space.style.height = '1000px';
+  space.style.width = "500px";
+  space.style.height = "1000px";
 
   const requestAnimFrame = window.requestAnimationFrame
     || ( ( cb ) => window.setTimeout( cb, 1 ) );
@@ -30,10 +38,10 @@ function initFireParticles() {
   }
 
   function particleFrame() {
-    surface.globalCompositeOperation = 'source-in';
-    surface.fillStyle = 'rgba(0, 0, 0, 0)';
+    surface.globalCompositeOperation = "source-in";
+    surface.fillStyle = "rgba(0, 0, 0, 0)";
     surface.fillRect( 0, 0, 50, 100 );
-    surface.globalCompositeOperation = 'lighter';
+    surface.globalCompositeOperation = "lighter";
     for ( let i = 0; i < particles.length; i++ ) {
       const p = particles[ i ];
       surface.beginPath();
@@ -46,7 +54,7 @@ function initFireParticles() {
       gradient.addColorStop( 0.5, rgba );
       gradient.addColorStop( 1, `rgba(${p.r}, ${p.g}, ${p.b}, 0)` );
       surface.fillStyle = gradient;
-      surface.arc( p.location.x, p.location.y, p.radius, Math.PI * 2, false );
+      surface.arc( p.location.x, p.location.y, p.radius, 0, Math.PI * 2 );
       surface.fill();
       p.death--;
       p.radius++;
@@ -60,8 +68,3 @@ function initFireParticles() {
 
   particleFrame();
 }
-
-if ( document.readyState === 'loading' )
-  document.addEventListener( 'DOMContentLoaded', initFireParticles );
-else
-  initFireParticles();

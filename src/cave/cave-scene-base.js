@@ -1,3 +1,4 @@
+import { assetUrl } from "../asset-paths.js";
 import { tiny, defs } from '../../lib/common.js';
 import { state as game, randomInt } from './game-input.js';
 import { tempAlert } from '../game-ui.js';
@@ -47,12 +48,12 @@ export class CaveSceneBase extends Scene {
     this.bumps = new Material( new defs.Fake_Bump_Map(), {
       color: color( 0.5, 0.5, 0.5, 1 ),
       ambient: 0.1, diffusivity: 0.7, specularity: 0.7,
-      texture: new Texture( "assets/textures/cave.png" ),
+      texture: new Texture( assetUrl( "assets/textures/cave.png" ) ),
     } );
     this.wood = new Material( bump, {
       color: color( 0.5, 0.5, 0.5, 1 ),
       ambient: 0.1, diffusivity: 0.7, specularity: 0.7,
-      texture: new Texture( "assets/textures/keybox.png" ),
+      texture: new Texture( assetUrl( "assets/textures/keybox.png" ) ),
     } );
     this._bumpsTemplate = this.bumps;
     this._woodTemplate = this.wood;
@@ -70,7 +71,7 @@ export class CaveSceneBase extends Scene {
     this.answer_photo = new Material( new defs.Textured_Phong(), {
       color: color( 0.5, 0.5, 0.5, 1 ),
       ambient: 0.1, diffusivity: 0.7, specularity: 0.7,
-      texture: new Texture( "assets/textures/answers/answer" + this.answer_str + ".png" ),
+      texture: new Texture( assetUrl( "assets/textures/answers/answer" + this.answer_str + ".png" ) ),
     } );
 
     document.addEventListener( "mouseup", () => {

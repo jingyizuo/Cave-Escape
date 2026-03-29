@@ -1,8 +1,10 @@
+import { assetUrl } from "../asset-paths.js";
+
 /**
- * Loads OBJ geometry from assets/models/ (paths relative to that folder).
+ * Loads OBJ geometry from assets/models/ (filename only, relative to that folder).
  */
 export function buildCaveShapes( defs, Shape_From_File ) {
-  const a = ( path ) => new Shape_From_File( `../../assets/models/${ path }` );
+  const a = ( path ) => new Shape_From_File( assetUrl( `assets/models/${ path }` ) );
   return {
     cave1: a( "cave/cave1.obj" ),
     cave2: a( "cave/cave2.obj" ),

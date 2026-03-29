@@ -1,3 +1,4 @@
+import { assetUrl } from "./asset-paths.js";
 import { state } from './cave/game-input.js';
 
 export function tempAlert( msg, duration ) {
@@ -20,7 +21,7 @@ export function installGameUi() {
         state.gun_hold = true;
         state.first_fire = false;
       }
-      const audio = new Audio( 'assets/audio/gun.mp3' );
+      const audio = new Audio( assetUrl( "assets/audio/gun.mp3" ) );
       audio.play();
     } else {
       if ( state.last_fire === true ) {
