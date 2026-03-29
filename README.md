@@ -70,7 +70,7 @@ Import the repository, preset **Other**, leave **Build Command** and **Output Di
 | `game.html` | WebGL canvas and game bootstrap |
 | `index.html` / `end.html` | Shell pages |
 | `src/` | Application modules (scene graph, picking logic, UI hooks, fire particles) |
-| `lib/` | Course graphics framework (`tiny-graphics`, widgets, `common.js`) |
+| `lib/` | Course graphics framework (`tiny-graphics`, widgets, `common/index.js`) |
 | `assets/` | `models/` (OBJ), `textures/`, `audio/`, `ui/`, `shell/` (GIF backgrounds) |
 | `styles/` / `js/` | Page CSS and shell layout helper |
 

@@ -1,5 +1,5 @@
 import { assetUrl } from "../asset-paths.js";
-import { tiny, defs } from '../../lib/common.js';
+import { tiny, defs } from '../../lib/common/index.js';
 import { state as game, randomInt } from './game-input.js';
 import { tempAlert } from '../game-ui.js';
 import { FIRE_LOOP_EMBED_URL, PickId } from './constants.js';

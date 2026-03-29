@@ -1,5 +1,5 @@
 /**
- * Movement_Controls in lib/common.js calls global getAngle() for first-person mouse look.
+ * Movement_Controls (`lib/common/movement.js`) calls global getAngle() for first-person mouse look.
  */
 function getAngle( A, B ) {
   if ( B[ 0 ] === 0 && A[ 0 ] === 0 ) return 0;

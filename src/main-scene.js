@@ -1,4 +1,4 @@
-import { tiny, defs } from '../lib/common.js';
+import { tiny, defs } from '../lib/common/index.js';
 
 const { Canvas_Widget, Code_Widget, Text_Widget } = tiny;
 

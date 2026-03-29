@@ -1,4 +1,4 @@
-import { tiny } from '../../lib/common.js';
+import { tiny } from '../../lib/common/index.js';
 import { state as game } from './game-input.js';
 import { CaveSceneBase } from './cave-scene-base.js';
 
