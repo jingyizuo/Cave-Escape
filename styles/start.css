@@ -23,7 +23,7 @@ html.start-shell .div1 {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 1rem;
   overflow-x: hidden;
   overflow-y: auto;
@@ -37,10 +37,23 @@ html.start-shell .div1 {
   background-attachment: scroll;
 }
 
+/* Text column flush right; body copy left-aligned; title and Start centered in the column */
+.start-shell .start-text-column {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(100%, 40rem);
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 1rem;
+}
+
 .start-shell .start-title {
   margin: 0;
-  width: 100%;
-  max-width: 40rem;
+  align-self: center;
+  width: fit-content;
+  max-width: min(100%, 40rem);
   color: red;
   font-family: Verdana, sans-serif;
   font-weight: bold;
@@ -53,8 +66,9 @@ html.start-shell .div1 {
 .start-shell .start-copy {
   margin: 0;
   flex: 0 1 auto;
-  width: 100%;
+  width: min(100%, 36rem);
   max-width: 36rem;
+  align-self: flex-start;
   color: #fff;
   font-family: "Courier New", Courier, monospace;
   font-size: clamp(0.8125rem, 3.4vw, 1rem);
@@ -64,7 +78,7 @@ html.start-shell .div1 {
   box-sizing: border-box;
 }
 
-/* 正文与 Start 之间的空白由按钮 margin-top: auto 吸收，真正把按钮沉到底部（拇指区）。 */
+/* Button margin-top: auto eats space between copy and Start, pinning the button to the bottom (thumb zone). */
 .start-shell .button {
   flex-shrink: 0;
   align-self: center;
@@ -86,10 +100,12 @@ html.start-shell .div1 {
   justify-content: center;
   font-size: clamp(1.2rem, 4.5vw, 2rem);
   cursor: pointer;
-  box-shadow: 0 50px 100px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow:
+    0 50px 100px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-/* 横屏 / 矮视口：不用大块 auto 留白，滚动时按钮吸底便于点到 */
+/* Landscape / short viewport: skip large auto gaps; sticky button stays reachable while scrolling */
 @media (max-width: 1199px) and (max-height: 520px) {
   html.start-shell .div1 {
     gap: 0.5rem;
@@ -97,7 +113,11 @@ html.start-shell .div1 {
     padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
   }
 
-  .start-shell .start-title {
+  .start-shell .start-text-column .start-title {
+    align-self: stretch;
+    width: auto;
+    max-width: none;
+    text-align: center;
     font-size: clamp(1.25rem, 5vw, 1.75rem);
   }
 
@@ -106,7 +126,8 @@ html.start-shell .div1 {
     line-height: 1.4;
   }
 
-  .start-shell .button {
+  .start-shell .start-text-column .button {
+    align-self: stretch;
     margin-top: clamp(0.5rem, 2vmin, 1rem);
     margin-bottom: 0;
     position: sticky;
@@ -121,7 +142,8 @@ html.start-shell .div1 {
       rgba(10, 10, 10, 0.95) 40%,
       rgba(10, 10, 10, 0.45) 100%
     );
-    box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.4),
+    box-shadow:
+      0 -10px 28px rgba(0, 0, 0, 0.4),
       0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
 }
@@ -135,51 +157,44 @@ html.start-shell .div1 {
     align-items: stretch;
   }
 
-  .start-shell .start-title {
+  .start-shell .start-text-column {
     position: absolute;
-    left: 650px;
+    right: max(24px, env(safe-area-inset-right, 0px));
+    left: auto;
     top: 90px;
-    max-width: none;
-    width: auto;
+    width: min(600px, 50vw);
+    flex: none;
+    gap: 0;
+  }
+
+  .start-shell .start-title {
+    position: static;
+    align-self: center;
+    max-width: 100%;
+    width: fit-content;
     font-size: 40pt;
     line-height: 150%;
-    text-align: left;
+    text-align: center;
   }
 
   .start-shell .start-copy {
-    position: absolute;
-    left: 600px;
-    top: 200px;
+    position: static;
+    margin-top: 3rem;
     max-width: none;
-    width: 50%;
+    width: 100%;
     font-size: 15pt;
     flex: none;
+    align-self: stretch;
   }
 
   .start-shell .button {
-    position: absolute;
-    /* 与正文列对齐倾向，并限制在可视区内（含安全区） */
-    left: clamp(
-      max(12px, env(safe-area-inset-left, 0px)),
-      52vw,
-      min(
-        830px,
-        calc(100vw - 12px - max(0px, env(safe-area-inset-right, 0px)))
-      )
-    );
-    top: clamp(
-      200px,
-      52vh,
-      min(
-        500px,
-        calc(
-          100vh - max(72px, env(safe-area-inset-bottom, 0px)) -
-            env(safe-area-inset-top, 0px)
-        )
-      )
-    );
+    position: static;
+    align-self: center;
+    margin-top: clamp(2.5rem, 12vh, 6rem);
+    margin-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
     width: auto;
-    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
     min-height: 44px;
     min-width: 0;
     padding: 4px 10px;
@@ -188,7 +203,9 @@ html.start-shell .div1 {
     align-items: center;
     justify-content: center;
     background: transparent;
-    box-shadow: 0 50px 100px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow:
+      0 50px 100px 0 rgba(0, 0, 0, 0.2),
+      0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
 }
 
