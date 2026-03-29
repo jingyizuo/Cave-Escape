@@ -9,8 +9,24 @@ export function tempAlert( msg, duration ) {
   setTimeout( () => { el.remove(); }, duration );
 }
 
+function installHintHotkey() {
+  window.addEventListener( "keydown", ( e ) => {
+    if ( e.repeat ) return;
+    const k = e.key;
+    if ( k !== "h" && k !== "H" ) return;
+    const t = e.target;
+    if ( t && ( t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable ) ) return;
+    e.preventDefault();
+    tempAlert(
+      "Light torches to match the carving. When correct, a gun appears. Click to shoot the chest, take the key, then open a door.",
+      4200,
+    );
+  } );
+}
+
 /** Wires `playSound` for inline onclick on #main-canvas. */
 export function installGameUi() {
+  installHintHotkey();
   window.playSound = function playSound() {
     if ( state.gun_hold === true ) {
       if ( state.last_fire === true ) {
