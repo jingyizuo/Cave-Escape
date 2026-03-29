@@ -1,0 +1,43 @@
+.end-shell #top {
+  border: 1px solid black;
+  height: 3000px;
+}
+
+.end-shell #bottom {
+  border: 1px solid red;
+}
+
+.end-shell .container {
+  width: 100%;
+  height: 100%;
+  background-image: url("../assets/shell/end.gif");
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  border: 1px solid red;
+  padding: 0;
+  margin: 0;
+}
+
+.end-shell .button {
+  position: relative;
+  left: 120px;
+  top: 400px;
+  background: transparent;
+  border: transparent;
+  color: red;
+  padding: 4px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 40px;
+  cursor: pointer;
+  box-shadow: 0 50px 100px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.end-shell .txt {
+  background: transparent;
+  color: white;
+  padding: 2px 5px;
+  text-align: center;
+}

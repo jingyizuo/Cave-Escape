@@ -7,10 +7,16 @@
   You were kidnapped by a group of heresy. These people imprisoned you in a dark cave. You overheard their conversation and knew that they intended to sacrifice you to their evil gods. They just left for making preparations of the sacrificial cult, you must solve the riddle of this cave, find the way and escape before they come back.  
   
 * **Implementation**:  
-  1. **Download** the file from this repo on GitHub  
-  2. Click and run **host.bat** for Windows, **host.command** for Mac  
-  3. Open the file **start.html** to start the game locally  
-  
+  1. **Clone or download** this repository from GitHub.  
+  2. **Serve the folder over HTTP.** The game uses ES modules and WebGL; opening HTML files directly as `file://` often breaks loading, so always use a local server.  
+     - **Development with live reload (recommended):** install [Node.js](https://nodejs.org/), then from the project root run `npm install` and `npm run dev`. A browser window opens **start.html**, and when you save changes to `.js`, `.html`, or `.css` files the page reloads automatically. If port `8000` is already in use (for example by another `server.py`), live-server picks another port; check the URL printed in the terminal.  
+     - **Python:** from the project root run `python3 server.py`. Open `http://127.0.0.1:8000/start.html` (or whatever port is printed). You can set a starting port with the environment variable `PORT` (for example `PORT=9000 python3 server.py`). If the chosen port is busy, the script tries the next ports automatically.  
+     - **Shortcut scripts:** double-click **host.bat** (Windows) or **host.command** (macOS) to run `server.py` the same way.  
+  3. Start playing from **start.html** using the `http://` URL shown by your server.  
+
+* **Deploy (Vercel):**  
+  Import this repo in the [Vercel](https://vercel.com) dashboard. Use framework preset **Other**, leave the build command empty, and leave the output directory empty. The included **vercel.json** rewrites `/` to **start.html** so the deployed root URL shows the start screen instead of jumping straight into **index.html**.  
+
 * **Controls**:  
   
   1. Move around with **W, A, S, D**  
@@ -22,6 +28,24 @@
   1. Interaction by clicking items  
   2. Escape the room with the hints  
   3. Look and move around in the cave  
+
+## Project layout
+
+* **`start.html` / `index.html` / `end.html`** — Start screen, main WebGL game, and ending credits.  
+* **`styles/`** — `game.css` (main game page), `start.css`, `end.css` for the shell screens.  
+* **`js/shell-fit.js`** — Makes the start/end full-bleed backgrounds track the window size (`data-shell-fit` on `<html>`).  
+* **`src/app.js`** — ES module entry: loads framework globals, the 2D fire canvas, `playSound`, and the WebGL `Canvas_Widget`.  
+* **`src/framework-globals.js`** — Sets `window.getAngle` for first-person controls in `lib/common.js`.  
+* **`src/main-scene.js`** — Registers **`CaveScene`** in `defs` as **`Transforms_Sandbox`** for the built-in code navigator.  
+* **`src/cave/cave-scene-base.js`** — Scene setup: shapes/materials, mouse picking, lights, camera base.  
+* **`src/cave/cave-scene.js`** — **`CaveScene`**: world drawing and escape transition.  
+* **`src/cave/build-cave-shapes.js`** — Builds the OBJ shape table and scales cave UVs.  
+* **`src/cave/constants.js`** — Picking IDs and shared URLs (e.g. fire ambience embed).  
+* **`src/cave/game-input.js`** — Shared state for gun / key flow plus `randomInt()`.  
+* **`src/game-ui.js`** — `tempAlert()` and `installGameUi()`.  
+* **`src/fire-particles.js`** — 2D fire on `#surface` for the dynamic flame texture.  
+* **`lib/`** — Course framework: `tiny-graphics.js`, `tiny-graphics-widgets.js`, `common.js`.  
+* **`assets/`** — Static media only, by type: **`audio/`** (e.g. gun shot), **`models/`** (`.obj`, including `models/cave/`), **`textures/`** (`.png` / answers), **`ui/`** (crosshair, favicon), **`shell/`** (start/end page GIFs).  
 
 ## Who did what
 * Jingyi Zuo:  
