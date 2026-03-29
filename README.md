@@ -9,13 +9,13 @@
 * **Implementation**:  
   1. **Clone or download** this repository from GitHub.  
   2. **Serve the folder over HTTP.** The game uses ES modules and WebGL; opening HTML files directly as `file://` often breaks loading, so always use a local server.  
-     - **Development with live reload (recommended):** install [Node.js](https://nodejs.org/), then from the project root run `npm install` and `npm run dev`. A browser window opens **start.html**, and when you save changes to `.js`, `.html`, or `.css` files the page reloads automatically. If port `8000` is already in use (for example by another `server.py`), live-server picks another port; check the URL printed in the terminal.  
-     - **Python:** from the project root run `python3 server.py`. Open `http://127.0.0.1:8000/start.html` (or whatever port is printed). You can set a starting port with the environment variable `PORT` (for example `PORT=9000 python3 server.py`). If the chosen port is busy, the script tries the next ports automatically.  
+     - **Development with live reload (recommended):** install [Node.js](https://nodejs.org/), then from the project root run `npm install` and `npm run dev`. A browser window opens **index.html** (start screen), and when you save changes to `.js`, `.html`, or `.css` files the page reloads automatically. If port `8000` is already in use (for example by another `server.py`), live-server picks another port; check the URL printed in the terminal.  
+     - **Python:** from the project root run `python3 server.py`. Open `http://127.0.0.1:8000/` (or whatever port is printed) for the start page, or **game.html** for the WebGL game directly. You can set a starting port with the environment variable `PORT` (for example `PORT=9000 python3 server.py`). If the chosen port is busy, the script tries the next ports automatically.  
      - **Shortcut scripts:** double-click **host.bat** (Windows) or **host.command** (macOS) to run `server.py` the same way.  
-  3. Start playing from **start.html** using the `http://` URL shown by your server.  
+  3. From the start page click **Start** to open **game.html**, or use the `http://` URL shown by your server.  
 
 * **Deploy (Vercel):**  
-  Import this repo in the [Vercel](https://vercel.com) dashboard. Use framework preset **Other**, leave the build command empty, and leave the output directory empty. The included **vercel.json** rewrites `/` to **start.html** so the deployed root URL shows the start screen instead of jumping straight into **index.html**.  
+  Import this repo in the [Vercel](https://vercel.com) dashboard. Use framework preset **Other**, leave the build command empty, and leave the output directory empty. The site root **`/`** serves **index.html** (start screen); the game lives at **`/game.html`**. This avoids Vercel’s default priority of **index.html** for the game, which used to skip the start page when relying only on rewrites.  
 
 * **Controls**:  
   
@@ -31,7 +31,7 @@
 
 ## Project layout
 
-* **`start.html` / `index.html` / `end.html`** — Start screen, main WebGL game, and ending credits.  
+* **`index.html` / `game.html` / `end.html`** — Start screen, WebGL game, and ending credits. **`start.html`** redirects to **index.html** for old links.  
 * **`styles/`** — `game.css` (main game page), `start.css`, `end.css` for the shell screens.  
 * **`js/shell-fit.js`** — Makes the start/end full-bleed backgrounds track the window size (`data-shell-fit` on `<html>`).  
 * **`src/app.js`** — ES module entry: loads framework globals, the 2D fire canvas, `playSound`, and the WebGL `Canvas_Widget`.  

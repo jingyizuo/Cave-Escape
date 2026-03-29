@@ -2,7 +2,7 @@
   "name": "cave-escape",
   "private": true,
   "scripts": {
-    "dev": "live-server --port=8000 --open=start.html --ignore=node_modules --ignore=.git"
+    "dev": "live-server --port=8000 --open=index.html --ignore=node_modules --ignore=.git"
   },
   "devDependencies": {
     "live-server": "^1.2.2"
