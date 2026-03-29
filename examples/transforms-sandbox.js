@@ -97,6 +97,12 @@ export class Transforms_Sandbox_Base extends Scene
           ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/cave.png" ) });
       this.wood = new Material( bump, { color: color( .5,.5,.5,1 ), 
             ambient: .1, diffusivity: .7, specularity: .7, texture: new Texture( "assets/keybox.png" ) });
+      this._bumpsTemplate = this.bumps;
+      this._woodTemplate = this.wood;
+      this._ambientTorchKey = -1;
+      this._gameEnded = false;
+      this._fireTexTick = 0;
+      this._fireAudioEl = document.getElementById( 'fire_audio' );
       this.offscreen=new Material( off_shader,
         { ambient: 1, color: color( 0,1,1,1 ) } );
       var answer_set_str=["011","101","110"];
@@ -196,13 +202,15 @@ export class Transforms_Sandbox_Base extends Scene
             else
                   this.mousepicking=null;
             
-    	    if(this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3]!=0 && this.sound==false){                
-                 document.getElementById('fire_audio').src ="https://www.youtube.com/embed/zLiHMw-Pfxg?&autoplay=1&loop=1&playlist=zLiHMw-Pfxg";
+            const fireOn = this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3] != 0;
+            const fa = this._fireAudioEl;
+            if ( fireOn && this.sound==false && fa ) {
+                 fa.src = "https://www.youtube.com/embed/zLiHMw-Pfxg?&autoplay=1&loop=1&playlist=zLiHMw-Pfxg";
                  this.sound=true;
             }
-            else if(this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3]!=0 && this.sound==true){}
-            else{
-                document.getElementById('fire_audio').src ="";
+            else if ( fireOn && this.sound==true ) {}
+            else if ( fa ) {
+                fa.src = "";
                 this.sound=false;
             }
             
@@ -246,10 +254,11 @@ export class Transforms_Sandbox_Base extends Scene
                                                 // *** Lights: *** Values of vector or point lights.  They'll be consulted by 
                                                 // the shader when coloring shapes.  See Light's class definition for inputs.
       const t = this.t = program_state.animation_time/1000;
-      const angle = Math.sin( t );
       this.num=this.light_num[0]+this.light_num[1]+this.light_num[2]+this.light_num[3];
       if(this.num!=0){
-        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( -0.1,1+0.1*Math.random(),1,0 ) ),color(1,0.2+0.1*Math.random(),0,1),3*this.num)]
+        const flicker = 0.5 + 0.5 * Math.sin( t * 17.3 );
+        program_state.lights = [ new Light(program_state.camera_transform.times( vec4( -0.1, 1 + 0.1 * flicker, 1, 0 ) ),
+          color( 1, 0.2 + 0.1 * Math.sin( t * 23.1 ), 0, 1 ), 3*this.num ) ];
       }
       else
         program_state.lights = [ new Light(program_state.camera_transform.times( vec4( 0,-1,1,0 ) ),color(1,1,1,1),.3)];
@@ -297,27 +306,12 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
                                     // Variable model_transform will be a local matrix value that helps us position shapes.
                                     // It starts over as the identity every single frame - coordinate axes at the origin.
       let model_transform = Mat4.identity();
-      switch(this.num){
-        case 0:
-          this.bumps=this.bumps.override({ambient: .02});
-          this.wood=this.wood.override({ambient: .02});
-          break;
-        case 1:
-          this.bumps=this.bumps.override({ambient: 0.05});
-          this.wood=this.wood.override({ambient: 0.05});
-          break;
-        case 2:
-          this.bumps=this.bumps.override({ambient: 0.07});
-          this.wood=this.wood.override({ambient: 0.07});
-          break;
-        case 3:
-          this.bumps=this.bumps.override({ambient: 0.09});
-          this.wood=this.wood.override({ambient: 0.09});
-          break;
-        case 4:
-          this.bumps=this.bumps.override({ambient: 0.10});
-          this.wood=this.wood.override({ambient: 0.10});
-          break;
+      const torchKey = Math.min( this.num, 4 );
+      if ( this._ambientTorchKey !== torchKey )
+      { const amb = [ .02, .05, .07, .09, .10 ][ torchKey ];
+        this.bumps = this._bumpsTemplate.override( { ambient: amb } );
+        this.wood = this._woodTemplate.override( { ambient: amb } );
+        this._ambientTorchKey = torchKey;
       }
       //gun
       model_transform=Mat4.translation(34,-2.7,11).times(Mat4.scale(0.3,0.3,0.3)).times(Mat4.rotation(0,0,0,1));  
@@ -422,8 +416,11 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           }
           else
             this.shapes.door_left.draw(context, program_state, model_transform,this.bumps);
-          document.exitPointerLock();  
-          window.location.href='end.html';
+          if ( !this._gameEnded ) {
+            this._gameEnded = true;
+            document.exitPointerLock();
+            window.location.href='end.html';
+          }
         }
         else{
           model_transform= Mat4.identity();
@@ -448,8 +445,11 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
           }
           else
             this.shapes.door_right.draw(context, program_state, model_transform,this.bumps);
-          document.exitPointerLock();  
-          window.location.href='end.html';
+          if ( !this._gameEnded ) {
+            this._gameEnded = true;
+            document.exitPointerLock();
+            window.location.href='end.html';
+          }
         }
         else{
           model_transform= Mat4.identity();
@@ -487,29 +487,30 @@ export class Transforms_Sandbox extends Transforms_Sandbox_Base
         }
         else
             this.shapes.statue.draw(context,program_state,model_transform, this.bumps);
-        this.texture.image.src = this.scratchpad.toDataURL("image/png");
+        if ( !off && ( ++this._fireTexTick % 2 === 0 ) )
+          this.texture.image.src = this.scratchpad.toDataURL("image/png");
 
                                     // Don't call copy to GPU until the event loop has had a chance
                                     // to act on our SRC setting once:
-        if( this.skipped_first_frame )
-                                                     // Update the texture with the current scene:
+        if( this.skipped_first_frame && !off && ( this._fireTexTick % 2 === 0 ) )
             this.texture.copy_onto_graphics_card( context.context, false );
         this.skipped_first_frame = true;
 
                                    
        
-        this.cube_2 = Mat4.translation( 59.5,9,2.2 ).times(Mat4.rotation(0.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
+        const ta = this.t;
+        this.cube_2 = Mat4.translation( 59.5,9,2.2 ).times(Mat4.rotation(0.1-0.1*Math.sin(ta*11.7),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.sin(ta*9.2),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[1]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
 
-         this.cube_2 = Mat4.translation( 56.5,9,32 ).times(Mat4.rotation(.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
+         this.cube_2 = Mat4.translation( 56.5,9,32 ).times(Mat4.rotation(.1-0.1*Math.sin(ta*12.1+1),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.sin(ta*8.7+2),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[2]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );
 
 
-         this.cube_2 = Mat4.translation( 57.5,9,61.5).times(Mat4.rotation(.1-0.1*Math.random(),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.random(),0,1,0)).times(Mat4.scale(5,6,1));
+         this.cube_2 = Mat4.translation( 57.5,9,61.5).times(Mat4.rotation(.1-0.1*Math.sin(ta*10.9+3),0,0,1)).times(Mat4.rotation(Math.PI/2+.3*Math.sin(ta*9.5+4),0,1,0)).times(Mat4.scale(5,6,1));
   //  context.context.clear( context.context.COLOR_BUFFER_BIT | context.context.DEPTH_BUFFER_BIT);
         if(this.light_num[3]==1)
           this.shapes.plane.draw( context, program_state, this.cube_2, this.materials.c );

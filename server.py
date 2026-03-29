@@ -1,6 +1,8 @@
+import errno
+import os
 import sys
 
-PORT = 8000
+DEFAULT_PORT = int(os.environ.get("PORT", "8000"))
 
 if sys.version_info < (3, 0):
     import SimpleHTTPServer
@@ -17,18 +19,18 @@ if sys.version_info < (3, 0):
         '.svg': 'image/svg+xml',
         '.css': 'text/css',
         '.js':  'application/x-javascript',
+        '.mp3': 'audio/mpeg',
         '': 'application/octet-stream', # Default
     }
     
-    httpd = SocketServer.TCPServer(("", PORT), Handler)
+    httpd = SocketServer.TCPServer(("", DEFAULT_PORT), Handler)
 
-    print("serving at port", PORT)
+    print("serving at port", DEFAULT_PORT)
     httpd.serve_forever()
 
 
 else:
     import http.server
-    from http.server import HTTPServer, BaseHTTPRequestHandler
     import socketserver
 
     Handler = http.server.SimpleHTTPRequestHandler
@@ -41,10 +43,25 @@ else:
         '.svg': 'image/svg+xml',
         '.css': 'text/css',
         '.js':  'application/x-javascript',
+        '.mp3': 'audio/mpeg',
         '': 'application/octet-stream', # Default
     }
 
-    httpd = socketserver.TCPServer(("", PORT), Handler)
+    class ReusableTCPServer(socketserver.TCPServer):
+        allow_reuse_address = True
 
-    print("serving at port", PORT)
+    port = DEFAULT_PORT
+    httpd = None
+    for _ in range(32):
+        try:
+            httpd = ReusableTCPServer(("", port), Handler)
+            break
+        except OSError as e:
+            if e.errno != errno.EADDRINUSE:
+                raise
+            port += 1
+    if httpd is None:
+        raise RuntimeError("no free TCP port in range %s–%s" % (DEFAULT_PORT, port - 1))
+
+    print("serving at port", port)
     httpd.serve_forever()
