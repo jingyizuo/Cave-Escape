@@ -15,7 +15,11 @@
   <div id="main-canvas" class="canvas-widget" onclick="playSound();">
     <canvas id="surface"></canvas>
   </div>
-  <div class="shift-hint" aria-hidden="true">Hold <kbd>Shift</kbd> to run</div>
+  <div id="escape-timer" class="escape-timer" role="timer" aria-live="polite" aria-atomic="true">2:00</div>
+  <div class="game-corner-hints" aria-hidden="true">
+    <div class="corner-hint"><kbd>H</kbd> for hints</div>
+    <div class="corner-hint">Hold <kbd>Shift</kbd> to run</div>
+  </div>
   <div class="aim"></div>
   <script>
     (function () {

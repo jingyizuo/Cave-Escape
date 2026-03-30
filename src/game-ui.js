@@ -18,8 +18,8 @@ function installHintHotkey() {
     if ( t && ( t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable ) ) return;
     e.preventDefault();
     tempAlert(
-      "Light torches to match the carving. When correct, a gun appears. Click to shoot the chest, take the key, then open a door.",
-      4200,
+      "You have 2 minutes to escape. Light torches to match the carving; a gun appears when correct. Click to shoot the chest, take the key, then open a door.",
+      4800,
     );
   } );
 }

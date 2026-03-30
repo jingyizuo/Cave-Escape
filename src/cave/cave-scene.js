@@ -1,5 +1,6 @@
 import { tiny } from '../../lib/common/index.js';
 import { state as game } from './game-input.js';
+import { stopEscapeTimer } from '../game-timer.js';
 import { CaveSceneBase } from './cave-scene-base.js';
 
 const { color, Mat4 } = tiny;
@@ -104,6 +105,7 @@ export class CaveScene extends CaveSceneBase {
         this.shapes.door_left.draw( context, program_state, model_transform, this.bumps );
       if ( !this._gameEnded ) {
         this._gameEnded = true;
+        stopEscapeTimer();
         document.exitPointerLock();
         window.location.href = "end.html";
       }
@@ -129,6 +131,7 @@ export class CaveScene extends CaveSceneBase {
         this.shapes.door_right.draw( context, program_state, model_transform, this.bumps );
       if ( !this._gameEnded ) {
         this._gameEnded = true;
+        stopEscapeTimer();
         document.exitPointerLock();
         window.location.href = "end.html";
       }
