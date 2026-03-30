@@ -1,0 +1,217 @@
+/* Start page: full-viewport background (works before shell-fit.js runs). */
+html.start-shell,
+html.start-shell body {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+html.start-shell body {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+html.start-shell .div1 {
+  box-sizing: border-box;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: #0a0a0a;
+  background-image: url("../assets/shell/start.gif");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  /* scroll avoids broken fixed-attachment on iOS and some compositors */
+  background-attachment: scroll;
+}
+
+/* Text column flush right; body copy left-aligned; title and Start centered in the column */
+.start-shell .start-text-column {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: min(100%, 40rem);
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 1rem;
+}
+
+.start-shell .start-title {
+  margin: 0;
+  align-self: center;
+  width: fit-content;
+  max-width: min(100%, 40rem);
+  color: red;
+  font-family: Verdana, sans-serif;
+  font-weight: bold;
+  line-height: 1.35;
+  font-size: clamp(1.6rem, 7vw, 2.5rem);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.start-shell .start-copy {
+  margin: 0;
+  flex: 0 1 auto;
+  width: min(100%, 36rem);
+  max-width: 36rem;
+  align-self: flex-start;
+  color: #fff;
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.8125rem, 3.4vw, 1rem);
+  line-height: 1.5;
+  text-align: justify;
+  padding: 0 0.125rem;
+  box-sizing: border-box;
+}
+
+/* Button margin-top: auto eats space between copy and Start, pinning the button to the bottom (thumb zone). */
+.start-shell .button {
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: max(0.75rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem));
+  min-height: 44px;
+  min-width: min(100%, 11rem);
+  max-width: min(100%, 20rem);
+  width: auto;
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  border: transparent;
+  color: red;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.2rem, 4.5vw, 2rem);
+  cursor: pointer;
+  box-shadow:
+    0 50px 100px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+/* Landscape / short viewport: skip large auto gaps; sticky button stays reachable while scrolling */
+@media (max-width: 1199px) and (max-height: 520px) {
+  html.start-shell .div1 {
+    gap: 0.5rem;
+    padding-top: max(0.35rem, env(safe-area-inset-top));
+    padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
+  }
+
+  .start-shell .start-text-column .start-title {
+    align-self: stretch;
+    width: auto;
+    max-width: none;
+    text-align: center;
+    font-size: clamp(1.25rem, 5vw, 1.75rem);
+  }
+
+  .start-shell .start-copy {
+    font-size: clamp(0.75rem, 2.8vw, 0.875rem);
+    line-height: 1.4;
+  }
+
+  .start-shell .start-text-column .button {
+    align-self: stretch;
+    margin-top: clamp(0.5rem, 2vmin, 1rem);
+    margin-bottom: 0;
+    position: sticky;
+    bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    padding-top: 0.5rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    min-height: 40px;
+    font-size: clamp(1.05rem, 4vw, 1.35rem);
+    max-width: min(100%, 18rem);
+    background: linear-gradient(
+      to top,
+      rgba(10, 10, 10, 0.95) 40%,
+      rgba(10, 10, 10, 0.45) 100%
+    );
+    box-shadow:
+      0 -10px 28px rgba(0, 0, 0, 0.4),
+      0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+}
+
+/* Wide layout: match original art placement (needs ~1200px so text column fits). */
+@media (min-width: 1200px) {
+  html.start-shell .div1 {
+    display: block;
+    padding: 0;
+    gap: 0;
+    align-items: stretch;
+  }
+
+  .start-shell .start-text-column {
+    position: absolute;
+    right: max(24px, env(safe-area-inset-right, 0px));
+    left: auto;
+    top: 90px;
+    width: min(600px, 50vw);
+    flex: none;
+    gap: 0;
+  }
+
+  .start-shell .start-title {
+    position: static;
+    align-self: center;
+    max-width: 100%;
+    width: fit-content;
+    font-size: 40pt;
+    line-height: 150%;
+    text-align: center;
+  }
+
+  .start-shell .start-copy {
+    position: static;
+    margin-top: 3rem;
+    max-width: none;
+    width: 100%;
+    font-size: 15pt;
+    flex: none;
+    align-self: stretch;
+  }
+
+  .start-shell .button {
+    position: static;
+    align-self: center;
+    margin-top: clamp(2.5rem, 12vh, 6rem);
+    margin-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 44px;
+    min-width: 0;
+    padding: 4px 10px;
+    font-size: clamp(24px, 4vw, 40px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    box-shadow:
+      0 50px 100px 0 rgba(0, 0, 0, 0.2),
+      0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+}
+
+.start-shell .txt {
+  background: transparent;
+  color: white;
+  padding: 2px 5px;
+  text-align: justify;
+}

@@ -1,0 +1,205 @@
+* {
+  font-family: monospace;
+}
+
+#surface {
+  position: absolute;
+  bottom: 100000px;
+}
+
+#main-canvas {
+  position: absolute;
+}
+
+body {
+  background: DarkGray;
+}
+
+div {
+  background: white;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  margin-bottom: -3px;
+}
+
+.canvas-widget {
+  width: 100%;
+  background: DimGray;
+}
+
+table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+
+table.control-box {
+  width: 100%;
+  border: 0;
+  margin: 0;
+  max-height: 380px;
+  transition: 0.5s;
+  overflow-y: scroll;
+  background: DimGray;
+}
+
+table.control-box:hover {
+  max-height: 500px;
+}
+
+table.control-box td {
+  overflow: hidden;
+  border: 0;
+  background: DimGray;
+  border-radius: 30px;
+}
+
+table.control-box td .control-div {
+  background: #eeeeee;
+  height: 338px;
+  padding: 5px 5px 5px 30px;
+  box-shadow: 25px 0 60px -15px inset;
+}
+
+table.control-box td * {
+  background: transparent;
+}
+
+table.control-box .control-div td {
+  border-radius: unset;
+}
+
+table.control-box .control-title {
+  padding: 7px 40px;
+  color: white;
+  background: DarkSlateGray;
+  box-shadow: 25px 0 70px -15px inset black;
+}
+
+.live_string {
+  display: inline-block;
+  background: unset;
+}
+
+table,
+th,
+td {
+  border: 2px solid black;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+button {
+  background: #4c9f50;
+  color: white;
+  padding: 6px;
+  border-radius: 9px;
+  box-shadow: 4px 6px 16px 0 rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.3s;
+}
+
+button:hover,
+button:focus {
+  transform: scale(1.3);
+  color: gold;
+}
+
+.link {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.show {
+  transform: scaleY(1);
+  height: 200px;
+  overflow: auto;
+}
+
+.hide {
+  transform: scaleY(0);
+  height: 0;
+  overflow: hidden;
+}
+
+.escape-timer {
+  position: fixed;
+  right: max(10px, env(safe-area-inset-right, 0px));
+  top: max(10px, env(safe-area-inset-top, 0px));
+  z-index: 2;
+  pointer-events: none;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(0, 0, 0, 0.42);
+  padding: 0.35rem 0.55rem;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+.escape-timer.escape-timer--warn {
+  color: #fc6;
+}
+
+.escape-timer.escape-timer--crit {
+  color: #f66;
+  animation: escape-timer-pulse 0.85s ease-in-out infinite alternate;
+}
+
+@keyframes escape-timer-pulse {
+  from {
+    opacity: 0.82;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.game-corner-hints {
+  position: fixed;
+  left: max(10px, env(safe-area-inset-left, 0px));
+  bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-start;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.game-corner-hints .corner-hint {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-size: 11px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.02em;
+}
+
+.game-corner-hints kbd {
+  font-size: 0.92em;
+  padding: 0.08em 0.35em;
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.aim {
+  background: transparent;
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  left: 50%;
+  top: 50%;
+  background-image: url(../assets/ui/aim.png);
+  pointer-events: none;
+  transform-origin: center center;
+  transform: translate(-50%, -50%) scale(0.8, 0.8);
+}

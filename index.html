@@ -1,140 +1,29 @@
-<!-- Graphics Example Code.  
-     index.html - The web page document containing the canvas (drawing surface).  It launches your JavaScript files. //-->
-<!DOCTYPE html> <html> <head> <meta charset="UTF-8"/> <link rel="icon" href="assets/fav.ico">
-<script src='https://wow.techbrood.com/libs/jquery/jquery-1.11.1.min.js'></script>
-<script src="fire.js"></script>
-<script src="gun.mp3"></script>
-<script src="examples/transforms-sandbox.js"></script>
-<style>
-    * { font-family: monospace }
-    #surface{
-      position: absolute;
-      bottom: 100000px;
-    }
-    #main-canvas{
-      position: absolute;
-    }
-    body { background: DarkGray }
-    div { background: white }
-    canvas { width: 100%; height: 100%; margin-bottom:-3px }
-    .canvas-widget { width: 100%; background: DimGray }
-    table { border-collapse: collapse; display:block; overflow-x: auto; }
-    table.control-box { width: 100%; border:0; margin:0; max-height:380px; transition:.5s; overflow-y:scroll; background:DimGray }
-    table.control-box:hover { max-height:500px }
-    table.control-box td { overflow:hidden; border:0; background:DimGray; border-radius:30px }
-    table.control-box td .control-div { background: #EEEEEE; height:338px; padding: 5px 5px 5px 30px; box-shadow: 25px 0px 60px -15px inset }
-    table.control-box td * { background:transparent }
-    table.control-box .control-div td { border-radius:unset }
-    table.control-box .control-title { padding:7px 40px; color:white; background:DarkSlateGray; box-shadow: 25px 0px 70px -15px inset black }
-    .live_string { display:inline-block; background: unset }
-    table, th, td { border: 2px solid black; vertical-align: top; white-space: nowrap }
-    button { background: #4C9F50; color: white; padding: 6px; border-radius:9px;
-             box-shadow: 4px 6px 16px 0px rgba(0,0,0,0.3); transition: background .3s, transform .3s }
-    button:hover, button:focus { transform: scale(1.3); color:gold }
-    .link { text-decoration:underline; cursor: pointer }
-    .show { transform: scaleY(1); height:200px; overflow:auto }
-    .hide { transform: scaleY(0); height:0px; overflow:hidden  }
-    .aim {
-      background: transparent;
-      position: absolute;
-      width: 56px;
-      height: 56px;
-      left: 50%;
-      top: 50%;
-      background-image: url(./aim.png);
-      pointer-events: none;
-      transform-origin: center center;
-      transform: translate(-50%, -50%) scale(0.8,0.8);
-    }
-</style>
-<title>Cave Escape</title>
-<iframe id="background_audio" style="display:none" width="560" height="315" src="https://www.youtube.com/embed/c-FvPutl77A?&autoplay=1&loop=1&playlist=c-FvPutl77A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<iframe id="fire_audio" style="display:none" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<audio id="gun_audio" src="" autoplay="false" ></audio>
-<!--iframe id="gun_audio" style="display:none" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe-->
-
+<!DOCTYPE html>
+<html lang="en" class="start-shell" data-shell-fit=".div1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cave Escape</title>
+  <link rel="icon" href="assets/ui/fav.ico">
+  <link rel="stylesheet" href="styles/start.css">
 </head>
-<body>       <!-- Begin typing your web page here. //-->
+<body>
+  <iframe style="display:none" width="560" height="315" src="https://www.youtube.com/embed/zLiHMw-Pfxg?&autoplay=1&loop=1&playlist=zLiHMw-Pfxg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-      <!-- The following code embeds a WebGL canvas panel, loads certain scene(s), and displays panel(s) of their controls. //-->
-<div id="main-canvas" class="canvas-widget" onclick="playSound();">
-  <canvas id="surface"></canvas>
-</div>
-<div class="aim"></div>
+  <div class="div1">
+    <div class="start-text-column">
+      <h1 class="start-title"><b>CAVE ESCAPE</b></h1>
+      <p class="start-copy">
+        You were kidnapped by a group of heresy. These people imprisoned you in a dark cave.
+        You overheard their conversation and knew that they intended to sacrifice you to their evil gods. <br><br>
+        They just left for making preparations of the sacrificial cult,
+        you must solve the riddle of this cave,
+        find the way and escape before they come back.
+      </p>
+      <a class="button" href="game.html" role="button">Start</a>
+    </div>
+  </div>
 
-<script type=module >      // ********************* THE ENTRY POINT OF YOUR WHOLE PROGRAM STARTS HERE ********************* 
-                           // Indicate which element on the page you want the Canvas_Widget to replace with a 3D WebGL area:
-  const element_to_replace = document.querySelector( "#main-canvas" );
-  import { Main_Scene, Additional_Scenes, Canvas_Widget } from './main-scene.js';  // Import the file that defines a scene.
-  const scenes = [ Main_Scene, ...Additional_Scenes ].map( scene => new scene() );    // This line creates your scene.
-  new Canvas_Widget( element_to_replace, scenes );
-
-</script>
-<script>
-function tempAlert(msg,duration)
-
-    {
-     var el = document.createElement("div");
-     el.setAttribute("style","position:absolute;top:80%;left:50%;background-color:white;background-color:rgba(0,0,0,0.7);color:gray;transform: translate(-50%,-50%);font-size: 35px;");
-     el.innerHTML = msg;
-     setTimeout(function(){
-      el.parentNode.removeChild(el);
-     },duration);
-     document.body.appendChild(el);
-    }
-
-
-       var first_fire=false;
-       var last_fire=false;
-       var gun_hold=false;
-       var key=false;
-        function playSound() {
-          
-          if(gun_hold==true){
-            if(last_fire==true){
-             gun_hold=false;
-             last_fire=false;
-            }
-            if(first_fire==true){
-            gun_hold=true;
-            first_fire=false;
-            }
-            var audio = new Audio('gun.mp3');
-            audio.play();
-
-          } 
-          else{
-            if(last_fire==true){
-             gun_hold=false;
-             last_fire=false;
-            }
-            if(first_fire==true){
-              first_fire=false;
-              gun_hold=true;
-            }
-          }
-          if(key==true){
-            first_fire=false;
-            last_fire=false;
-            gun_hold=false;
-            return;
-          }
-          
-      }
-  function getAngle(A, B) {
-      if(B[0] === 0 && A[0] === 0) {
-        return 0;
-      }
-      var diffX = B[0] - A[0];
-      var diffY = B[1] - A[1];
-      var a = A[0] * B[0] + A[1] * B[1];
-      var b = Math.sqrt(A[0] * A[0] + A[1] * A[1]);
-      var c = Math.sqrt(B[0] * B[0] + B[1] * B[1]);
-      return (B[0] / Math.abs(B[0])) *  Math.acos(a / b / c);
-    }
-  function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-  }
-
-</script>
-</body></html>
+  <script src="js/shell-fit.js" defer></script>
+</body>
+</html>

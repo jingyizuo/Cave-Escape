@@ -1,0 +1,41 @@
+<!-- Cave Escape — WebGL game (former index.html). //-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cave Escape</title>
+  <link rel="icon" href="assets/ui/fav.ico">
+  <link rel="stylesheet" href="styles/game.css">
+  <iframe id="background_audio" style="display:none" width="560" height="315" src="about:blank" data-youtube-src="https://www.youtube.com/embed/c-FvPutl77A?&autoplay=1&loop=1&playlist=c-FvPutl77A" title="Background audio" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <iframe id="fire_audio" style="display:none" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <audio id="gun_audio" src="" autoplay="false"></audio>
+</head>
+<body>
+  <div id="main-canvas" class="canvas-widget" onclick="playSound();">
+    <canvas id="surface"></canvas>
+  </div>
+  <div id="escape-timer" class="escape-timer" role="timer" aria-live="polite" aria-atomic="true">2:00</div>
+  <div class="game-corner-hints" aria-hidden="true">
+    <div class="corner-hint"><kbd>H</kbd> for hints</div>
+    <div class="corner-hint">Hold <kbd>Shift</kbd> to run</div>
+  </div>
+  <div class="aim"></div>
+  <script>
+    (function () {
+      function armYoutubeBg() {
+        var el = document.getElementById("background_audio");
+        if (!el || el.dataset.youtubeArmed === "1") return;
+        var u = el.getAttribute("data-youtube-src");
+        if (!u) return;
+        el.dataset.youtubeArmed = "1";
+        el.src = u;
+      }
+      ["pointerdown", "keydown"].forEach(function (ev) {
+        window.addEventListener(ev, armYoutubeBg, { once: true, passive: true });
+      });
+    })();
+  </script>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
